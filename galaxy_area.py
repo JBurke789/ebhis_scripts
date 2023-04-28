@@ -43,4 +43,7 @@ elif dB == 'G':
 area= pix*pix_area#calculate area of galaxy above 3 sigma
 print('area of galaxy above 3 sigma: '+ str(area)+' degrees squared')
 
-
+#calculate beam size as fraction of galaxy size
+beam=(9.4/120)**2 *np.pi
+covered= beam/area
+print('Beam covers '+str(covered)+' of the galaxy')
