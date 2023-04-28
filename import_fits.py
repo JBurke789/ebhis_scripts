@@ -1,6 +1,6 @@
 import os
 #define input and output names
-fits_name = 'NGC3198_EBHIS.fits'
+fits_name = 'NGC3198_ebhis.fits'
 im_name = 'NGC3198_EBHIS.im'
 
 #import function

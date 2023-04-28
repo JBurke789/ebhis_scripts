@@ -4,13 +4,13 @@ import numpy as np
 #give inputs to be used
 im_name='NGC3198_EBHIS.im'
 
-xbl= 130 #box around galaxy
-ybl= 130
-xtr= 170 
-ytr= 170
+xbl= 28 #box around galaxy
+ybl= 51
+xtr= 42 
+ytr= 65
 
-low_chan= 70
-high_chan= 205
+low_chan= 90
+high_chan= 135
 box_coords = str(xbl) + ',' + str(ybl) + ',' + str(xtr) + ',' + str(ytr)
 channels=str(low_chan)+'~'+str(high_chan)
 
@@ -38,10 +38,10 @@ os.system('rm -r *hanningsmooth2.im')
 os.system('rm -r *hanningsmooth3.im')
 
 #get stddev for hanning filter in region with no galaxy (make three cubes and get mean of stddevs)
-xbls=[xbl-50, xbl-50,    xtr,    xtr]#define coords for 4 boxes around galaxy
-ybls=[ybl-50,    ytr,    ytr, ybl-50]
-xtrs=[   xbl,    xbl, xtr+50, xtr+50]
-ytrs=[   ybl, ytr+50, ytr+50,    ybl]
+xbls=[xbl-20, xbl-20,    xtr,    xtr]#define coords for 4 boxes around galaxy
+ybls=[ybl-20,    ytr,    ytr, ybl-20]
+xtrs=[   xbl,    xbl, xtr+20, xtr+20]
+ytrs=[   ybl, ytr+20, ytr+20,    ybl]
 stdevs=[]
 for i in range(4):#calc stdev in each of the boxes
     coord = str(xbls[i]) + ',' + str(ybls[i]) + ',' + str(xtrs[i]) + ',' + str(ytrs[i])

@@ -6,8 +6,8 @@ import copy
 
 #define input galaxy details.
 im_name='NGC3198_EBHIS.im'
-blc=[130,130,1]     #bottom left corner 
-trc=[170,170,270]   #top right corner
+blc=[60,90,60]     #bottom left corner 
+trc=[80,110,190]   #top right corner
 
 #extract spectrum from datacube
 ia.open(im_name)
