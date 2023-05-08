@@ -4,17 +4,23 @@ import matplotlib.pyplot as plt
 
 #define input galaxy details.
 im_name='column_density_map'
-xbl= 28 #box around galaxy
-ybl= 45
-xtr= 42 
-ytr= 65
+xbl= 45 #box around galaxy
+ybl= 28
+xtr= 58
+ytr= 40
 dB = 'E' 
 
 #find standard deviation of background
-xbls=[xbl-20, xbl-20,    xtr,    xtr]#define coords for 4 boxes around galaxy
-ybls=[ybl-20,    ytr,    ytr, ybl-20]
-xtrs=[   xbl,    xbl, xtr+20, xtr+20]
-ytrs=[   ybl, ytr+20, ytr+20,    ybl]
+if dB=='G':
+    xbls=[xbl-100, xbl-100, xtr+50 , xtr+50]#define coords for 4 boxes around galaxy
+    ybls=[ybl-100, ytr+50 , ytr+50 , ybl-100]
+    xtrs=[xbl-50 , xbl-50 , xtr+100, xtr+100]
+    ytrs=[ybl-50 , ytr+100, ytr+100, ybl-50]
+elif dB=='E':
+    xbls=[xbl-20, xbl-20, xtr   , xtr   ]#define coords for 4 boxes around galaxy
+    ybls=[ybl-20, ytr   , ytr   , ybl-20]
+    xtrs=[xbl   , xbl   , xtr+20, xtr+20]
+    ytrs=[ybl   , ytr+20, ytr+20, ybl   ]  
 stdevs=[]
 for i in range(4):#calc stdev in each of the boxes
     coord = str(xbls[i]) + ',' + str(ybls[i]) + ',' + str(xtrs[i]) + ',' + str(ytrs[i])
