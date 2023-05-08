@@ -6,14 +6,14 @@ import copy
 
 
 #define input galaxy details.
-im_name='NGC3198_EBHIS.im'
-xbl= 130 #box around galaxy
-ybl= 130
-xtr= 165
-ytr= 165
-low_chan=0
-high_chan=504
-dB = 'G' 
+im_name='NGC628_EBHIS.im'
+xbl= 45 #box around galaxy
+ybl= 28
+xtr= 58
+ytr= 40
+low_chan=80
+high_chan=140
+dB = 'E' 
 blc=[xbl,ybl, low_chan]
 trc=[xtr,ytr,high_chan]
 
