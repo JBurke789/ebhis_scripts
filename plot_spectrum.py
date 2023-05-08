@@ -4,10 +4,18 @@ import matplotlib.pyplot as plt
 import os
 import copy
 
+
 #define input galaxy details.
 im_name='NGC3198_EBHIS.im'
-blc=[60,90,60]     #bottom left corner 
-trc=[80,110,190]   #top right corner
+xbl= 130 #box around galaxy
+ybl= 130
+xtr= 165
+ytr= 165
+low_chan=0
+high_chan=504
+dB = 'G' 
+blc=[xbl,ybl, low_chan]
+trc=[xtr,ytr,high_chan]
 
 #extract spectrum from datacube
 ia.open(im_name)
@@ -19,6 +27,7 @@ sumspec =np.sum(np.sum(flux,axis=0),axis=0) #collapse into 1D array
 ia.open(im_name)
 csys=ia.coordsys()
 x=np.array(np.arange(0,len(sumspec),1.)) # need floating point array
+freqs = copy.deepcopy(x)
 velo=copy.deepcopy(x)
 blctemp=copy.deepcopy(blc)
 for a in range(0,len(x)):
@@ -31,8 +40,10 @@ for a in range(0,len(x)):
 #plot spectrum
 fig,ax=plt.subplots()
 ax.plot(velo,sumspec)
-ax.set_xlabel('velocity km/s')
+ax.set_xlabel('velocity (km/s)')
+ax.set_ylabel('Brightness temp (K)')
 
+'''
 #fit spectrum with 2 Gaussains
 #define functions
 gaussfunc = lambda A,x0,sigma, x: A*np.exp(-((x-x0)**2)/(2.*sigma**2) )
@@ -46,5 +57,7 @@ pfinal = out[0]
 covar = out[1]
 #plot fittings
 ax.plot(velo,fitfunc(pfinal,velo))
+'''
 
 fig.savefig('spectrum.png')
+ 
