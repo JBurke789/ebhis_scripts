@@ -4,13 +4,15 @@ import numpy as np
 #give inputs to be used
 im_name='NGC3198_EBHIS.im'
 
-xbl= 28 #box around galaxy
-ybl= 51
-xtr= 42 
-ytr= 65
+xbl= 120 #box around galaxy
+ybl= 120
+xtr= 170
+ytr= 180
 
-low_chan= 90
-high_chan= 135
+low_chan=310
+high_chan= 440
+MW_high_chan = 130
+
 box_coords = str(xbl) + ',' + str(ybl) + ',' + str(xtr) + ',' + str(ytr)
 channels=str(low_chan)+'~'+str(high_chan)
 
@@ -38,16 +40,16 @@ os.system('rm -r *hanningsmooth2.im')
 os.system('rm -r *hanningsmooth3.im')
 
 #get stddev for hanning filter in region with no galaxy (make three cubes and get mean of stddevs)
-xbls=[xbl-20, xbl-20,    xtr,    xtr]#define coords for 4 boxes around galaxy
-ybls=[ybl-20,    ytr,    ytr, ybl-20]
-xtrs=[   xbl,    xbl, xtr+20, xtr+20]
-ytrs=[   ybl, ytr+20, ytr+20,    ybl]
+xbls=[xbl-100, xbl-100, xtr+50 , xtr+50]#define coords for 4 boxes around galaxy
+ybls=[ybl-100, ytr+50 , ytr+50 , ybl-100]
+xtrs=[xbl-50 , xbl-50 , xtr+100, xtr+100]
+ytrs=[ybl-50 , ytr+100, ytr+100, ybl-50]
 stdevs=[]
 for i in range(4):#calc stdev in each of the boxes
     coord = str(xbls[i]) + ',' + str(ybls[i]) + ',' + str(xtrs[i]) + ',' + str(ytrs[i])
     stats=imstat(imagename= 'hanningsmoothed.im',
                  box=coord,
-                 chans= str(low_chan-50)+'~'+str(low_chan))
+                 chans= str(MW_high_chan+10)+'~'+str(low_chan-50))
     stdevs.append(stats['sigma'][0])
 mn_stdev = np.mean(np.array(stdevs))#calc mean stdev
 mask_string = "'hanningsmoothed.im'" + ">" + str(mn_stdev*3)
@@ -72,5 +74,5 @@ immoments(imagename=im_name,
           moments=[0,1,2],
           #box=box_coords,
           chans=channels,
-          outfile='moment_map',
-          mask=mask_string)#use smoothed data as a mask and only use pixels for moment map with more than 3 sigma of hanning data sigma = 0.05
+          mask=mask_string,
+          outfile='moment_map')#use smoothed data as a mask and only use pixels for moment map with more than 3 sigma of hanning data sigma = 0.05
