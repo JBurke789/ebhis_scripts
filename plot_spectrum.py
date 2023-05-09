@@ -6,16 +6,16 @@ import copy
 
 
 #define input galaxy details.
-im_name='NGC628_EBHIS.im'
+im_name='raw_image.im'
 xbl= 45 #box around galaxy
-ybl= 28
-xtr= 58
-ytr= 40
-low_chan=80
-high_chan=140
+ybl= 57
+xtr= 57
+ytr= 73
+low_chan=60
+high_chan= 85
 dB = 'E' 
-blc=[xbl,ybl, low_chan]
-trc=[xtr,ytr,high_chan]
+blc=[xbl,ybl, low_chan-20]
+trc=[xtr,ytr,high_chan+20]
 
 #extract spectrum from datacube
 ia.open(im_name)

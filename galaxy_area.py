@@ -5,9 +5,9 @@ import matplotlib.pyplot as plt
 #define input galaxy details.
 im_name='column_density_map'
 xbl= 45 #box around galaxy
-ybl= 28
-xtr= 58
-ytr= 40
+ybl= 57
+xtr= 57
+ytr= 73
 dB = 'E' 
 
 #find standard deviation of background

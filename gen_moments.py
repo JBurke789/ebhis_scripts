@@ -2,17 +2,17 @@ import os
 import numpy as np
 
 #give inputs to be used
-im_name='NGC628_EBHIS.im'
+im_name='raw_image.im'
 dB = 'E'
 
-low_chan=107
-high_chan= 118
-MW_high_chan = 50
+low_chan=60
+high_chan= 85
+MW_high_chan = 24
 
 xbl= 45 #box around galaxy
-ybl= 28
-xtr= 58
-ytr= 40
+ybl= 57
+xtr= 57
+ytr= 73
 
 box_coords = str(xbl) + ',' + str(ybl) + ',' + str(xtr) + ',' + str(ytr)
 channels=str(low_chan)+'~'+str(high_chan)
