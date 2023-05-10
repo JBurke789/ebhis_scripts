@@ -5,14 +5,14 @@ import numpy as np
 im_name='raw_image.im'
 dB = 'E'
 
-low_chan=60
-high_chan= 85
-MW_high_chan = 24
+low_chan=41
+high_chan= 105
+MW_high_chan = 12
 
-xbl= 45 #box around galaxy
-ybl= 57
-xtr= 57
-ytr= 73
+xbl= 50 #box around galaxy
+ybl= 85
+xtr= 70
+ytr= 100
 
 box_coords = str(xbl) + ',' + str(ybl) + ',' + str(xtr) + ',' + str(ytr)
 channels=str(low_chan)+'~'+str(high_chan)
@@ -41,22 +41,32 @@ os.system('rm -r *hanningsmooth2.im')
 os.system('rm -r *hanningsmooth3.im')
 
 #get stddev for hanning filter in region with no galaxy (make three cubes and get mean of stddevs)
-if dB=='G':
+if dB=='G':#bigger box
     xbls=[xbl-100, xbl-100, xtr+50 , xtr+50]#define coords for 4 boxes around galaxy
     ybls=[ybl-100, ytr+50 , ytr+50 , ybl-100]
     xtrs=[xbl-50 , xbl-50 , xtr+100, xtr+100]
     ytrs=[ybl-50 , ytr+100, ytr+100, ybl-50]
-elif dB=='E':
+elif dB=='E':#smaller box
     xbls=[xbl-20, xbl-20, xtr   , xtr   ]#define coords for 4 boxes around galaxy
     ybls=[ybl-20, ytr   , ytr   , ybl-20]
     xtrs=[xbl   , xbl   , xtr+20, xtr+20]
     ytrs=[ybl   , ytr+20, ytr+20, ybl   ]  
 stdevs=[]
+
+if (low_chan- MW_high_chan)<= 20:
+    std_lw= high_chan +10
+    std_hgh= high_chan + 30
+
+else:
+    std_lw = MW_high_chan
+    std_hgh = low_chan
+
+
 for i in range(4):#calc stdev in each of the boxes
     coord = str(xbls[i]) + ',' + str(ybls[i]) + ',' + str(xtrs[i]) + ',' + str(ytrs[i])
     stats=imstat(imagename= 'hanningsmoothed.im',
                  box=coord,
-                 chans= str(MW_high_chan)+'~'+str(low_chan))
+                 chans= str(std_lw)+'~'+str(std_hgh))
     stdevs.append(stats['sigma'][0])
 mn_stdev = np.mean(np.array(stdevs))#calc mean stdev
 mask_string = "'hanningsmoothed.im'" + ">" + str(mn_stdev*3)
