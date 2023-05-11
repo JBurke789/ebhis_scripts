@@ -7,15 +7,15 @@ import copy
 
 #define input galaxy details.
 im_name='raw_image.im'
-xbl= 45 #box around galaxy
-ybl= 57
-xtr= 57
-ytr= 73
-low_chan=60
-high_chan= 85
-dB = 'E' 
-blc=[xbl,ybl, low_chan-20]
-trc=[xtr,ytr,high_chan+20]
+xbl= 125 #box around galaxy
+ybl= 130
+xtr= 175
+ytr= 175
+low_chan=83
+high_chan= 106
+dB = 'G' 
+blc=[xbl,ybl, 50]
+trc=[xtr,ytr,233]
 
 #extract spectrum from datacube
 ia.open(im_name)
@@ -43,6 +43,9 @@ ax.plot(velo,sumspec)
 ax.set_xlabel('velocity (km/s)')
 ax.set_ylabel('Brightness temp (K)')
 
+output = np.stack((velo,sumspec),axis=0)
+np.save('spectrum.npy',output)
+
 '''
 #fit spectrum with 2 Gaussains
 #define functions
@@ -59,5 +62,5 @@ covar = out[1]
 ax.plot(velo,fitfunc(pfinal,velo))
 '''
 
-fig.savefig('spectrum.png')
+fig.savefig('spectrum.png',overwrite=True)
  
