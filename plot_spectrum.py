@@ -7,9 +7,9 @@ import copy
 
 #define input galaxy details.
 im_name='raw_image.im'
-xbl= 125 #box around galaxy
+xbl= 115 #box around galaxy
 ybl= 130
-xtr= 175
+xtr= 150
 ytr= 175
 low_chan=83
 high_chan= 106
@@ -37,30 +37,27 @@ for a in range(0,len(x)):
   v=csys.frequencytovelocity(value=freq,doppler='radio',velunit='km/s')
   velo[a]=float(v)
 
+
+
+#set pixel to anglular resolution for local volume or further out.
+if dB == 'E':
+    pix_area=0.05427333333333333**2
+elif dB == 'G':
+    pix_area=0.01666666666666667**2
+
+sens=1.55 #Sensitivity K/Jy
+box_pix = (ytr-ybl)*(xtr-xbl)
+beam=(9.4/120)**2 *np.pi#beam area degrees
+flux_BA = (sumspec*beam)/(sens*box_pix*pix_area)#converts Kelvin per box area in pixels to Jy per beam area
+
 #plot spectrum
 fig,ax=plt.subplots()
 ax.plot(velo,sumspec)
 ax.set_xlabel('velocity (km/s)')
 ax.set_ylabel('Brightness temp (K)')
 
-output = np.stack((velo,sumspec),axis=0)
+#save spectrum to numpy file [velocity,flux/Beam Area]
+output = np.stack((velo,flux_BA),axis=0)
 np.save('spectrum.npy',output)
-
-'''
-#fit spectrum with 2 Gaussains
-#define functions
-gaussfunc = lambda A,x0,sigma, x: A*np.exp(-((x-x0)**2)/(2.*sigma**2) )
-fitfunc = lambda p, x: gaussfunc(p[0],p[1],p[2],x) + gaussfunc(p[3],p[4],p[5],x) +p[6]
-errfunc = lambda p, x, y, err: (y - fitfunc(p, x)) / err
-pinit = [60.,300.,20.,60.,350.,20.,-20.] # only x0 values were changed
-yerr=np.ones(len(sumspec))
-
-out = sp.optimize.leastsq(errfunc, pinit, args=(velo,sumspec,yerr),full_output=1) # this time use velo as x-array
-pfinal = out[0]
-covar = out[1]
-#plot fittings
-ax.plot(velo,fitfunc(pfinal,velo))
-'''
-
 fig.savefig('spectrum.png',overwrite=True)
  
