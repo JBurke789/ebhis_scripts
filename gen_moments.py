@@ -3,16 +3,16 @@ import numpy as np
 
 #give inputs to be used
 im_name='raw_image.im'
-dB = 'E'
+dB = 'G'
 
-low_chan=41
+low_chan=83
 high_chan= 105
-MW_high_chan = 12
+MW_high_chan = 125
 
-xbl= 50 #box around galaxy
-ybl= 85
-xtr= 70
-ytr= 100
+xbl= 125 #box around galaxy
+ybl= 130
+xtr= 175
+ytr= 175
 
 box_coords = str(xbl) + ',' + str(ybl) + ',' + str(xtr) + ',' + str(ytr)
 channels=str(low_chan)+'~'+str(high_chan)

@@ -1,6 +1,6 @@
 import os
 #define input and output names
-fits_name = 'NGC925.fits'
+fits_name = 'HoII.fits'
 im_name = 'raw_image.im'
 
 #import function
