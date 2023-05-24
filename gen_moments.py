@@ -5,8 +5,8 @@ import numpy as np
 im_name='raw_image.im'
 dB = 'G'
 
-low_chan=83
-high_chan= 105
+low_chan=60
+high_chan= 133
 MW_high_chan = 125
 
 xbl= 125 #box around galaxy
@@ -84,7 +84,7 @@ immath(imagename= 'no_filter_moment0',
 ia.open('column_density_map')#fix units
 ia.setbrightnessunit('1/cm**2')
 ia.done()
-os.system('rm -r no_filter_moment0*')#remove old file
+#os.system('rm -r no_filter_moment0*')#remove old file
 
 #generate moment maps using hanning filter
 immoments(imagename=im_name,
