@@ -49,14 +49,13 @@ class Galaxy:
         print('total flux: ' + str(tot_flux)+ ' +- ' +str(var*tot_flux) +' Jy km/s')
         print('Normalised total flux: ' +str(norm_tot_flux)+ ' +- ' +str(uncert) +' Jy km/s')
 
-HoII= Galaxy('HoII','HoII.fits')
-#HoII.import_fits()
-HoII.gal_coords(550,640)
-HoII.mom0_map()
-HoII.gal_vals(4.216078,1.422910,5946.823,420,1.403447)
-
+gal= Galaxy('NGC5457','NGC5457.fits')
+#gal.import_fits()
+gal.gal_coords(550,780)
+gal.mom0_map()
+gal.gal_vals(4.038,1.369,37155.14,1036,1.36317)
 '''
-Threshold: 4.263508333333334
-total flux: 3246.9917968749996 +- 1.09644296875 Jy km/s
-Normalised total flux: 375.80923574942125 +- 0.12690312138310184 Jy km/s
+Threshold: 4.0558565217391305
+total flux: 25744.74425271739 +- 1.0649765625 Jy km/s
+Normalised total flux: 2979.7157699904387 +- 0.12326117621527778 Jy km/s
 '''
