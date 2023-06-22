@@ -3,17 +3,17 @@ import numpy as np
 import os
 import copy
 
-plt.close()
+
 #define input galaxy details.
 im_name='raw_image.im'
-xbl= 130 #box around galaxy
-ybl= 130
-xtr= 170
-ytr= 170
+xbl= 110 #box around galaxy
+ybl= 140
+xtr= 180
+ytr= 185
 
-low_chan=83
+low_chan=60
 high_chan= 106
-dB = 'G' 
+#dB = 'G' 
 blc=[xbl,ybl, 50]
 trc=[xtr,ytr,233]
 

@@ -26,10 +26,10 @@ fig2,ax2=plt.subplots()
 ax2.plot(velo,cal_temp)
 ax2.set_xlabel('Velocity [km/s]')
 ax2.set_ylabel('Temp [k]')
-#plt.show()
+plt.show()
 
 
 #integrate to get total flux
-tot_temp = sp.integrate.simps(cal_temp[30:90],velo[30:90])
+tot_temp = sp.integrate.simps(cal_temp[30:90],velo[30:90])/1000
 print(velo[30:90])
 print(tot_temp)

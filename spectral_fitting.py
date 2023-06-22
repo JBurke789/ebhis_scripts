@@ -1,5 +1,5 @@
 import matplotlib
-matplotlib.use('TkAgg')
+matplotlib.use('tkagg')
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy as sp
@@ -19,8 +19,36 @@ temp = array[1]
 fig1,ax1 = plt.subplots()
 ax1.plot(velo,temp)
 ax1.set_xlabel('Velocity [km/s]')
-ax1.set_ylabel('Specific flux [Jy/BA]')
+ax1.set_ylabel('Temp [k]')
 
+'''
+convert to Jy/BA
+'''
+xbl= 110 #box around galaxy
+ybl= 140
+xtr= 180
+ytr= 185
+
+N= (xtr-xbl)*(ytr-ybl)#box size in pixels
+print(N)
+
+S = 1.28 #sensitivity K/Jy
+PA = 0.01666666666666667**2 # Pixel area, degrees squared
+BA = np.pi * (10.8/(2*60))**2 # Beam area, FWHM=10.8'
+
+spec_flux = temp*BA/(S*N*PA)
+
+fig2,ax2 = plt.subplots()
+ax2.plot(velo,spec_flux)
+ax2.set_xlabel('Velocity [km/s]')
+ax2.set_ylabel('Specific Flux [Jy/BA]')
+plt.show()
+
+
+"""
+fitting spectral line with gaussian
+"""
+'''
 #fitting with a single gaussian
 def gauss(p,x):#define gaussian function
     return p[0]*np.exp( -(x-p[1])**2 /(2*p[2]**2)) +p[3]
@@ -37,7 +65,12 @@ out = sp.optimize.least_squares(resids,p_init)
 print(out.x)#print out parameters found by the fitting
 ax1.plot(velo,gauss(out.x,velo))#plot fit
 plt.show()
+'''
 
+'''
+integrating spectrum
+'''
+'''
 #integrate to get total flux
 tot_flux = sp.integrate.simps(flux,velo)
 print(tot_flux)
@@ -52,7 +85,7 @@ mass_HI =  "{:.2e}".format(mass(out.x[1],tot_flux))
 print('HI mass: ')
 print(mass_HI)
 
-
+'''
 
 
 
