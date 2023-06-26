@@ -30,21 +30,27 @@ class Galaxy:
                   #box=box_coords,
                   chans=self.vel_channels,
                   outfile='no_filter_moment0')
-        
-    def gal_vals(self,max,rms,sum,npix,stan_dev):
-        #calculate values
+
+    def thresh(self,max,rms):
         threshold= max + 3.*(rms/(float(self.vel_coords[1])-float(self.vel_coords[0])))
+        setattr(self,'thresh',threshold)
+        print('Threshold: '+ str(threshold))
+
+    def gal_vals(self,sum,npix):
+        #calculate values
+        threshold= self.thresh
         total = sum - threshold*npix#K km/s
         tot_flux = total /1.28
         norm_tot_flux = tot_flux/8.64 #8.64pix/b.a
-        var=stan_dev/total #variance as a fraction of peak
-        uncert= norm_tot_flux*var
+        #uncertainty
+        rms = self.rms #rms is the uncertainty per pixel
+        uncert = rms*np.sqrt(npix)
+        frac_uncert = uncert/total
         #set attributes to object
-        setattr(self,'thresh',threshold)
         setattr(self,'total_flux',tot_flux)
         setattr(self,'normalised_tot_flux',norm_tot_flux)
-        setattr(self,'uncertainty',uncert)
+        setattr(self,'uncertainty',frac_uncert)
         #print important values to command line
-        print('Threshold: '+ str(threshold))
-        print('total flux: ' + str(tot_flux)+ ' +- ' +str(var*tot_flux) +' Jy km/s')
-        print('Normalised total flux: ' +str(norm_tot_flux)+ ' +- ' +str(uncert) +' Jy km/s')
+        #print('Threshold: '+ str(threshold))
+        print('total flux: ' + str(tot_flux)+ ' +- ' +str(frac_uncert*tot_flux) +' Jy km/s')
+        print('Normalised total flux: ' +str(norm_tot_flux)+ ' +- ' +str(frac_uncert*norm_tot_flux) +' Jy km/s')
