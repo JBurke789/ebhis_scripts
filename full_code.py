@@ -9,16 +9,20 @@ class Galaxy:
         self.path=path #path to galaxy fits file
 
     def import_fits(self):
-        importfits(fitsimage=self.path,
-                   imagename='raw_image.im')
+        dir = 'raw_image.im'
+        if os.path.isdir(dir):
+            print('fits file already imported to CASA format.')
+        else:
+            importfits(fitsimage=self.path,
+                        imagename='raw_image.im')
+            print('fits file imported')
         
-    def gal_coords(self,low_vel,high_vel):
+    def mom0_map(self,low_vel,high_vel):
+        #assign channels of galaxy
         channels=str(low_vel)+'~'+str(high_vel)
         coords=[low_vel,high_vel]
         setattr(self,'vel_coords',coords)
         setattr(self,'vel_channels',channels)
-
-    def mom0_map(self):
         #remove existing files so can run again from scratch
         os.system('rm -rf hanningsmoothed*')
         os.system('rm -rf column_density_map*')
@@ -32,6 +36,7 @@ class Galaxy:
                   outfile='no_filter_moment0')
 
     def thresh(self,max,rms):
+        self.rms = rms
         threshold= max + 3.*(rms/(float(self.vel_coords[1])-float(self.vel_coords[0])))
         setattr(self,'thresh',threshold)
         print('Threshold: '+ str(threshold))
@@ -43,8 +48,8 @@ class Galaxy:
         tot_flux = total /1.28
         norm_tot_flux = tot_flux/8.64 #8.64pix/b.a
         #uncertainty
-        rms = self.rms #rms is the uncertainty per pixel
-        uncert = rms*np.sqrt(npix)
+        #rms = self.rms #rms is the uncertainty per pixel
+        uncert = self.rms*np.sqrt(npix)
         frac_uncert = uncert/total
         #set attributes to object
         setattr(self,'total_flux',tot_flux)
