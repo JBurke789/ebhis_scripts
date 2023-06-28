@@ -1,6 +1,6 @@
 import os
 #define input and output names
-fits_name = 'HOII_MWpipe_v2.fits'
+fits_name = 'NGC4736.fits'
 im_name = 'raw_image.im'
 
 #import function

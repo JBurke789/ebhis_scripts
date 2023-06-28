@@ -59,3 +59,4 @@ class Galaxy:
         #print('Threshold: '+ str(threshold))
         print('total flux: ' + str(tot_flux)+ ' +- ' +str(frac_uncert*tot_flux) +' Jy km/s')
         print('Normalised total flux: ' +str(norm_tot_flux)+ ' +- ' +str(frac_uncert*norm_tot_flux) +' Jy km/s')
+

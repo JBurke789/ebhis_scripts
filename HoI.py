@@ -58,4 +58,6 @@ HoI.gal_vals(2.494712,0.9665473,797.2793,224,9.074097)
 Threshold: 2.552704838
 total flux: 176.15110647500003 +- 7.0891382812499995 Jy km/s
 Normalised total flux: 20.387859545717596 +- 0.8205021158854167 Jy km/s
+
+Noisy background hard to calculate threshhold => big effect on result
 """

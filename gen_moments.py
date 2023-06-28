@@ -3,18 +3,18 @@ import numpy as np
 
 #give inputs to be used
 im_name='raw_image.im'
-dB = 'G'
+#dB = 'G'
 
 low_chan=550
-high_chan=680
-MW_high_chan = 125
+high_chan=900
+#MW_high_chan = 125
 
-xbl= 5 #box around galaxy
-ybl= 20
-xtr= 60
-ytr= 60
+#xbl= 5 #box around galaxy
+#ybl= 20
+#xtr= 60
+#ytr= 60
 
-box_coords = str(xbl) + ',' + str(ybl) + ',' + str(xtr) + ',' + str(ytr)
+#box_coords = str(xbl) + ',' + str(ybl) + ',' + str(xtr) + ',' + str(ytr)
 channels=str(low_chan)+'~'+str(high_chan)
 
 #remove existing files so can run again from scratch

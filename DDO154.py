@@ -1,62 +1,13 @@
-import os
-import numpy as np
-import copy
-import scipy as sp
-
-class Galaxy:
-    def __init__(self,name,path):
-        self.name=name #galaxy name
-        self.path=path #path to galaxy fits file
-
-    def import_fits(self):
-        importfits(fitsimage=self.path,
-                   imagename='raw_image.im')
-        
-    def gal_coords(self,low_vel,high_vel):
-        channels=str(low_vel)+'~'+str(high_vel)
-        coords=[low_vel,high_vel]
-        setattr(self,'vel_coords',coords)
-        setattr(self,'vel_channels',channels)
-
-    def mom0_map(self):
-        #remove existing files so can run again from scratch
-        os.system('rm -rf hanningsmoothed*')
-        os.system('rm -rf column_density_map*')
-        os.system('rm -rf moment_map*')
-        os.system('rm -rf no_filter_mom*')
-        #create moment 0 map with no filter 
-        immoments(imagename='raw_image.im',
-                  moments=[0],
-                  #box=box_coords,
-                  chans=self.vel_channels,
-                  outfile='no_filter_moment0')
-        
-    def gal_vals(self,max,rms,sum,npix,stan_dev):
-        #calculate values
-        threshold= max + 3.*(rms/(float(self.vel_coords[1])-float(self.vel_coords[0])))
-        total = sum - threshold*npix#K km/s
-        tot_flux = total /1.28
-        norm_tot_flux = tot_flux/8.64 #8.64pix/b.a
-        var=stan_dev/total #variance as a fraction of peak
-        uncert= norm_tot_flux*var
-        #set attributes to object
-        setattr(self,'thresh',threshold)
-        setattr(self,'total_flux',tot_flux)
-        setattr(self,'normalised_tot_flux',norm_tot_flux)
-        setattr(self,'uncertainty',uncert)
-        #print important values to command line
-        print('Threshold: '+ str(threshold))
-        print('total flux: ' + str(tot_flux)+ ' +- ' +str(var*tot_flux) +' Jy km/s')
-        print('Normalised total flux: ' +str(norm_tot_flux)+ ' +- ' +str(uncert) +' Jy km/s')
+execfile('../ebhis_scripts/full_code.py')
 
 gal= Galaxy('DDO154','DDO154.fits')
-#gal.import_fits()
-gal.gal_coords(680,850)
+gal.import_fits()
+gal.gal_coords(700,850)
 gal.mom0_map()
-gal.gal_vals(3.407886,1.170236,2746.023,552,0.9995299)
-
+gal.thresh(5.251814,1.791467)
+gal.gal_vals(2690.121,494)
 '''
-Threshold: 3.428537223529412
-total flux: 666.7737911029412 +- 0.7808827343749999 Jy km/s
-Normalised total flux: 77.17289248876634 +- 0.09037994610821756 Jy km/s
+Threshold: 5.287643340000001
+total flux: 60.9571797187499 +- 31.107299987811825 Jy km/s
+Normalised total flux: 7.055229134114571 +- 3.6003819430337756 Jy km/s
 '''
