@@ -35,6 +35,13 @@ class Galaxy:
                   chans=self.vel_channels,
                   outfile='no_filter_moment0')
 
+
+
+
+
+
+
+
     def thresh(self,max,rms):
         self.rms = rms
         threshold= max + 3.*(rms/(float(self.vel_coords[1])-float(self.vel_coords[0])))
@@ -59,16 +66,3 @@ class Galaxy:
         #print('Threshold: '+ str(threshold))
         print('total flux: ' + str(tot_flux)+ ' +- ' +str(frac_uncert*tot_flux) +' Jy km/s')
         print('Normalised total flux: ' +str(norm_tot_flux)+ ' +- ' +str(frac_uncert*norm_tot_flux) +' Jy km/s')
-'''
-    def store_results(self,newdata):
-        with open('~/ebhis_scripts/values.csv','r') as file:
-            s=file.read()
-            newline = []
-            if self.name not in s:
-                    
-                
-
-        if not found:
-            lines.append(newdata)
-'''
-
