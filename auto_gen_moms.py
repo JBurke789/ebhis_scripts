@@ -1,0 +1,53 @@
+import csv
+import numpy as np
+
+
+class galaxy:
+    def __init__(self,name,rad_vel,width):
+        self.name=name #galaxy name
+        self.rad_vel = float(rad_vel)
+        self.width = float(width)
+
+    def import_fits(self):
+        dir = self.name+'/raw_image.im'
+        if os.path.isdir(dir):
+            print(self.name+'fits file already imported')
+        else:
+            fits= self.name+'/'+self.name+'.fits'
+            destination = self.name+'/'+'raw_image.im'
+            importfits(fitsimage=fits,
+                        imagename=destination)
+            print(self.name,' fits file imported')
+
+    def mom0_map(self):
+        #find limits and channels
+        low_lim  =self.rad_vel-self.width-10
+        high_lim =self.rad_vel+self.width+10
+        vels = np.linspace(-606.648,609.427,945)
+        l_ind = np.argmin(np.abs(np.array(vels)-low_lim))
+        h_ind = np.argmin(np.abs(np.array(vels)-high_lim))
+        channels= str(l_ind)+'~'+str(h_ind)
+        #remove existing files so can run again from scratch
+        s1='rm -rf '+self.name+'/hanningsmoothed*'
+        s2='rm -rf '+self.name+'/column_density_map*'
+        s3='rm -rf '+self.name+'/moment_map*'
+        s4='rm -rf '+self.name+'/no_filter_mom*'
+        os.system(s1)
+        os.system(s2)
+        os.system(s3)
+        os.system(s4)
+        #create moment 0 map with no filter
+        raw_im = self.name+'/raw_image.im' 
+        out = self.name+'/no_filter_moment0'
+        immoments(imagename=raw_im,
+                  moments=[0],
+                  #box=box_coords,
+                  chans=channels,
+                  outfile=out)
+
+with open('/users/jburke/ebhis_scripts/data_lists_testing_sample/auto_analyse.csv','r') as f:
+    reader = csv.reader(f)
+    for row in reader:
+        obj = galaxy(row[0],row[3],row[6])
+        obj.import_fits()
+        obj.mom0_map()
