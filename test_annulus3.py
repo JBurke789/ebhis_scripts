@@ -116,16 +116,17 @@ class Gal:
     def write_output(self,norm_flux_jy,norm_uncert):
         file1 = '/users/jburke/ebhis_scripts/test_output.csv'
         with open(file1,'a') as file:
-            a= str(norm_flux_jy)
-            b=str(norm_uncert)
+            a= norm_flux_jy
+            b=norm_uncert
             lines = [self.name,
                      self.ra,
                      self.dec,
-                     a,
-                     b,
+                     str(a[0]),
+                     str(b[0]),
                      '\n']
             file.write(','.join(lines))
-
+with open('/users/jburke/ebhis_scripts/test_output.csv','w') as empty_csv:
+    pass
 with open('/users/jburke/Desktop/test_input.csv','r') as f:
     reader = csv.reader(f)
     for row in reader:
@@ -136,7 +137,4 @@ with open('/users/jburke/Desktop/test_input.csv','r') as f:
         obj.extract_annuli_vals()
 
 
-
-#x= Gal('NGC7640','350.5275','40.8456')
-#x.extract_annuli_vals()
 
