@@ -22,7 +22,7 @@ with open('/users/jburke/ebhis_scripts/workflow_results/no_linewidth.csv','r') a
     reader = csv.reader(f)
     for row in reader:#looks at each galaxy
         raw_im_path = row[0]+'/raw_image.im'
-        immview(raw_im_path)
+        imview(raw_im_path)
         cont = input('Can a Mom 0 map be generated?: (y/n)')
         if cont == 'n':
             #add to cant make mom0 list
