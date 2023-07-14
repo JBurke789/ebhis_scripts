@@ -107,7 +107,7 @@ class Gal:
                 write.writerow(self.row)
 
     def write_output(self,norm_flux_jy,norm_uncert):
-        file1 = '/users/jburke/ebhis_scripts/workflow_results/final_results'
+        file1 = '/users/jburke/ebhis_scripts/workflow_results/final_results.csv'
         with open(file1,'a') as file:
             a= norm_flux_jy
             b=norm_uncert
@@ -123,7 +123,7 @@ class Gal:
 with open('/users/jburke/ebhis_scripts/workflow_results/need_manual_analysis.csv','w') as f:
     pass
 #empty csv to save final results in
-with open('/users/jburke/ebhis_scripts/workflow_results/final_results','w') as f:
+with open('/users/jburke/ebhis_scripts/workflow_results/final_results.csv','w') as f:
     pass
 
 #go through csv of galaxies woth mom0 maps and run analysis on them and save results to correct csv file
@@ -132,6 +132,6 @@ with open('/users/jburke/ebhis_scripts/workflow_results/gals_with_m0maps.csv','r
     for row in reader:
         print('...')
         print(row[0])
-        obj = Gal(row[0],row[1],row[2])
+        obj = Gal(row)
         obj.extract_annuli_vals()
 
