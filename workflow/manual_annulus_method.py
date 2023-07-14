@@ -33,7 +33,7 @@ class galaxy:
         setattr(self,'norm_flux',norm_flux_jy)
         setattr(self,'norm_flux_uncert',norm_uncert)
 
-with open('/users/jburke/ebhis_scripts/workflow_results/gals_with_m0maps.csv','r') as f:
+with open('/users/jburke/ebhis_scripts/workflow_results/need_manual_analysis.csv','r') as f:
     reader = csv.reader(f)
     for row in reader:
         obj=galaxy(row)
@@ -41,15 +41,15 @@ with open('/users/jburke/ebhis_scripts/workflow_results/gals_with_m0maps.csv','r
         #save results?
         save = input('Save results?: (y/n) ')
         if save == 'y':
-            file1 = '/users/jburke/ebhis_scripts/workflow_results/final_results'
+            file1 = '/users/jburke/ebhis_scripts/workflow_results/final_results.csv'
             with open(file1,'a') as file:
                 a= obj.norm_flux
                 b=obj.norm_flux_uncert
                 lines = [obj.name,
                          obj.ra,
                          obj.dec,
-                         str(a[0]),
-                         str(b[0]),
+                         str(a),
+                         str(b),
                          '\n']
                 file.write(','.join(lines))
         else:
