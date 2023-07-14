@@ -29,7 +29,7 @@ class Gal:
         with open(file5,'w') as file:
             lines = ['#CRTFv0 CASA Region Text Format version 0 \n','ellipse [[',self.ra,'deg,',self.dec,'deg], [3500arcsec, 3500arcsec], 0.00000000deg]']
             file.write(''.join(lines))
-        print('region files created for ', self.name)
+        #print('region files created for ', self.name)
 
 
     def extract_annuli_vals(self):
@@ -67,19 +67,19 @@ class Gal:
         sum_ann2 = (sum3-sum2)/(npix3-npix2)
         sum_ann3 = (sum4-sum3)/(npix4-npix3)
         sum_ann4 = (sum5-sum4)/(npix5-npix4)
-        print('background ann1:',sum_ann1)
-        print('background ann2:',sum_ann2)
-        print('background ann3:',sum_ann3)
-        print('background ann3:',sum_ann4)
+        #print('background ann1:',sum_ann1)
+        #print('background ann2:',sum_ann2)
+        #print('background ann3:',sum_ann3)
+        #print('background ann3:',sum_ann4)
         #calculate rms of annuli
         rms_ann1 = np.sqrt((npix2/(npix2-npix1))*(rms2**2 - (npix1/(npix2))*rms1**2))
         rms_ann2 = np.sqrt((npix3/(npix3-npix2))*(rms3**2 - (npix2/(npix3))*rms2**2))
         rms_ann3 = np.sqrt((npix4/(npix4-npix3))*(rms4**2 - (npix3/(npix4))*rms3**2))
         rms_ann4 = np.sqrt((npix5/(npix5-npix4))*(rms5**2 - (npix4/(npix5))*rms4**2))
-        print('rms ann1:',rms_ann1)
-        print('rms ann2:',rms_ann2)
-        print('rms ann3:',rms_ann3)
-        print('rms ann4:',rms_ann4)
+        #print('rms ann1:',rms_ann1)
+        #print('rms ann2:',rms_ann2)
+        #print('rms ann3:',rms_ann3)
+        #print('rms ann4:',rms_ann4)
         #check if annuli have same vals
         ann_diff1 = abs(sum_ann1-sum_ann2)/sum_ann2
         ann_diff2 = abs(sum_ann2-sum_ann3)/sum_ann3
@@ -114,7 +114,7 @@ class Gal:
         self.write_output(norm_flux_jy,norm_uncert)
 
     def write_output(self,norm_flux_jy,norm_uncert):
-        file1 = '/users/jburke/ebhis_scripts/test_output.csv'
+        file1 = '/users/jburke/ebhis_scripts/data_lists_testing_sample/auto_analyse_values.csv'
         with open(file1,'a') as file:
             a= norm_flux_jy
             b=norm_uncert
@@ -125,14 +125,13 @@ class Gal:
                      str(b[0]),
                      '\n']
             file.write(','.join(lines))
-with open('/users/jburke/ebhis_scripts/test_output.csv','w') as empty_csv:
+with open('/users/jburke/ebhis_scripts/data_lists_testing_sample/auto_analyse_values.csv','w') as empty_csv:
     pass
-with open('/users/jburke/Desktop/test_input.csv','r') as f:
+with open('/users/jburke/ebhis_scripts/data_lists_testing_sample/auto_analyse.csv','r') as f:
     reader = csv.reader(f)
     for row in reader:
         print('...')
         print(row[0])
-        print('...')
         obj = Gal(row[0],row[1],row[2])
         obj.extract_annuli_vals()
 

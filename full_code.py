@@ -24,8 +24,6 @@ class Galaxy:
         setattr(self,'vel_coords',coords)
         setattr(self,'vel_channels',channels)
         #remove existing files so can run again from scratch
-        os.system('rm -rf hanningsmoothed*')
-        os.system('rm -rf column_density_map*')
         os.system('rm -rf moment_map*')
         os.system('rm -rf no_filter_mom*')
         #create moment 0 map with no filter 
