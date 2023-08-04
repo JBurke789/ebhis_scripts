@@ -2,19 +2,27 @@ import csv
 """ 
 First code in workflow to run. Runs through csv file of galaxy candidates, and sorts them into 4 catagories. Each catagory has its own csv file with the galaxies.
 """
-#create empty csv files to save results from sorting in 
-with open('/users/jburke/ebhis_scripts/workflow_results/auto_analyse.csv','w') as empty_csv:
-    pass
-with open('/users/jburke/ebhis_scripts/workflow_results/outside_vel.csv','w') as empty_csv:
-    pass
-with open('/users/jburke/ebhis_scripts/workflow_results/MW_overlap.csv','w') as empty_csv:
-    pass
-with open('/users/jburke/ebhis_scripts/workflow_results/no_linewidth.csv','w') as empty_csv:
-    pass
+#create empty csv files to save results from sorting in and set header, same as input file
+with open('/users/jburke/Desktop/test_gal_list.csv','r') as f:
+    reader = csv.reader(f)
+    header = next(reader)
+    with open('/users/jburke/ebhis_scripts/workflow_results/auto_analyse.csv','w') as empty_csv:
+        csv_writer = csv.writer(empty_csv)
+        csv_writer.writerow(header)
+    with open('/users/jburke/ebhis_scripts/workflow_results/outside_vel.csv','w') as empty_csv:
+        csv_writer = csv.writer(empty_csv)
+        csv_writer.writerow(header)
+    with open('/users/jburke/ebhis_scripts/workflow_results/MW_overlap.csv','w') as empty_csv:
+        csv_writer = csv.writer(empty_csv)
+        csv_writer.writerow(header)
+    with open('/users/jburke/ebhis_scripts/workflow_results/no_linewidth.csv','w') as empty_csv:
+        csv_writer = csv.writer(empty_csv)
+        csv_writer.writerow(header)
 
 #go through input candidate list and sort into relevant csv files
 with open('/users/jburke/Desktop/gal_candidates_big.csv','r') as f:
     reader = csv.reader(f)
+    header = next(reader)
     for row in reader:#looks at each galaxy
         if ' ' in row[0]:
             row[0] = row[0].replace(' ','')
