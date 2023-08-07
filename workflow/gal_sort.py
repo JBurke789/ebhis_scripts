@@ -1,7 +1,11 @@
 import csv
+import os
 """ 
-First code in workflow to run. Runs through csv file of galaxy candidates, and sorts them into 4 catagories. Each catagory has its own csv file with the galaxies.
+First code in workflow to run. 
+-removes spaces in galaxy names
+-sorts galaxies into 4 catagories. Each catagory has its own csv file with the galaxies.
 """
+
 #create empty csv files to save results from sorting in and set header, same as input file
 with open('/users/jburke/Desktop/test_gal_list.csv','r') as f:
     reader = csv.reader(f)
@@ -24,11 +28,11 @@ with open('/users/jburke/Desktop/gal_candidates_big.csv','r') as f:
     reader = csv.reader(f)
     header = next(reader)
     for row in reader:#looks at each galaxy
-        if ' ' in row[0]:
+        if ' ' in row[0]:#removes space in galaxy name
             row[0] = row[0].replace(' ','')
         if row[6]!= '':#has 50pc linewidth
-            low_lim  =float(row[3])-float(row[6])-10
-            high_lim =float(row[3])+float(row[6])+10
+            low_lim  =float(row[4])-float(row[6])-10
+            high_lim =float(row[4])+float(row[6])+10
             #Galaxies out of velocity range >+/-605km/s
             if high_lim >= 605 or low_lim<=-605:
                 print(row[0], ' outside velocity range')
