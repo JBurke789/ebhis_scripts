@@ -8,6 +8,10 @@ class Gal:
         self.name=row[0]
         self.ra = row[1]
         self.dec = row[2]
+        self.dist = row[3]
+        self.radvel = row[4]
+        self.mag21 = row[5]
+        self.w50 = row[6]
 
     def make_region_files(self):
         #makes 5 region files of increasing radius
@@ -114,21 +118,33 @@ class Gal:
             lines = [self.name,
                      self.ra,
                      self.dec,
+                     self.dist,
+                     self.radvel,
+                     self.mag21,
+                     self.w50,
                      str(a[0]),
                      str(b[0]),
                      '\n']
             file.write(','.join(lines))
 
+
 #make empty csv to save galaxies to be done by hand
-with open('/users/jburke/ebhis_scripts/workflow_results/need_manual_analysis.csv','w') as f:
-    pass
+with open('/users/jburke/Desktop/test_gal_list.csv','r') as f:
+    reader = csv.reader(f)
+    header = next(reader)
+    with open('/users/jburke/ebhis_scripts/workflow_results/need_manual_analysis.csv','w') as f:
+        csv_writer = csv.writer(f)
+        csv_writer.writerow(header)
 #empty csv to save final results in
-with open('/users/jburke/ebhis_scripts/workflow_results/final_results.csv','w') as f:
-    pass
+    header_new = header + ['flux [Jy km/s BA^-1]','uncert']
+    with open('/users/jburke/ebhis_scripts/workflow_results/final_results.csv','w') as f:
+        csv_writer = csv.writer(f)
+        csv_writer.writerow(header_new)
 
 #go through csv of galaxies woth mom0 maps and run analysis on them and save results to correct csv file
 with open('/users/jburke/ebhis_scripts/workflow_results/gals_with_m0maps.csv','r') as f:
     reader = csv.reader(f)
+    header = next(reader)
     for row in reader:
         print('...')
         print(row[0])
