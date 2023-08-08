@@ -54,6 +54,7 @@ with open('/users/jburke/Desktop/test_gal_list.csv','r') as f:
 
 with open('/users/jburke/ebhis_scripts/workflow_results/auto_analyse.csv','r') as f:
     reader = csv.reader(f)
+    header = next(reader)
     for row in reader:
         obj = galaxy(row[0],row[4],row[6])
         obj.mom0_map()
@@ -66,8 +67,8 @@ with open('/users/jburke/ebhis_scripts/workflow_results/no_linewidth.csv','r') a
     reader = csv.reader(f)
     header = next(reader)
     for row in reader:
-        if row[4]>=50:
-            obj = galaxy(row[0],row[4],row[6])
+        if float(row[4])>=50:
+            obj = galaxy(row[0],row[4],0)
             obj.big_mom0_map()
             with open('/users/jburke/ebhis_scripts/workflow_results/gals_with_m0maps.csv','a')as file:
                 write= csv.writer(file)
