@@ -11,8 +11,8 @@ class galaxy:
 
     def mom0_map(self):#for galaxies with known w50
         #find limits and channels
-        low_lim  =self.rad_vel-self.width-10
-        high_lim =self.rad_vel+self.width+10
+        low_lim  =self.rad_vel-self.width-15
+        high_lim =self.rad_vel+self.width+15
         vels = np.linspace(-606.648,609.427,945)
         l_ind = np.argmin(np.abs(np.array(vels)-low_lim))
         h_ind = np.argmin(np.abs(np.array(vels)-high_lim))
@@ -44,33 +44,54 @@ class galaxy:
 
 
 #makes empty csv file for galaxies with maps
-with open('/users/jburke/Desktop/test_gal_list.csv','r') as f:
+with open('/users/jburke/Desktop/full_gal_list.csv','r') as f:
     reader = csv.reader(f)
     header = next(reader)
-    with open('/users/jburke/ebhis_scripts/workflow_results/gals_with_m0maps.csv','w') as empty_csv:
+    with open('/users/jburke/ebhis_scripts/full_workflow_results/gals_with_m0maps.csv','w') as empty_csv:
+        csv_writer = csv.writer(empty_csv)
+        csv_writer.writerow(header)
+#makes empty csv file for galaxies with no linewidth that need to made manually
+with open('/users/jburke/Desktop/full_gal_list.csv','r') as f:
+    reader = csv.reader(f)
+    header = next(reader)
+    with open('/users/jburke/ebhis_scripts/full_workflow_results/need_manual_m0maps.csv','w') as empty_csv:
         csv_writer = csv.writer(empty_csv)
         csv_writer.writerow(header)
 #goes through csv of galaxies ready to make m0 maps
-
-with open('/users/jburke/ebhis_scripts/workflow_results/auto_analyse.csv','r') as f:
+print('...')
+print('Galaxies with W50')
+print('...')
+with open('/users/jburke/ebhis_scripts/full_workflow_results/auto_analyse.csv','r') as f:
     reader = csv.reader(f)
     header = next(reader)
     for row in reader:
+        print('Gal: '+ str(row[0]))
         obj = galaxy(row[0],row[4],row[6])
         obj.mom0_map()
         #adds to csv list of galaxies with mom0 maps
-        with open('/users/jburke/ebhis_scripts/workflow_results/gals_with_m0maps.csv','a')as file:
+        with open('/users/jburke/ebhis_scripts/full_workflow_results/gals_with_m0maps.csv','a')as file:
             write= csv.writer(file)
             write.writerow(row)
 
-with open('/users/jburke/ebhis_scripts/workflow_results/no_linewidth.csv','r') as f:
+print('...')
+print('Galaxies without W50')
+print('...')
+with open('/users/jburke/ebhis_scripts/full_workflow_results/no_linewidth.csv','r') as f:
     reader = csv.reader(f)
     header = next(reader)
     for row in reader:
         if float(row[4])>=50:
+            print('Generating map for '+ str(row[0]))
             obj = galaxy(row[0],row[4],0)
             obj.big_mom0_map()
-            with open('/users/jburke/ebhis_scripts/workflow_results/gals_with_m0maps.csv','a')as file:
+            with open('/users/jburke/ebhis_scripts/full_workflow_results/gals_with_m0maps.csv','a')as file:
+                write= csv.writer(file)
+                write.writerow(row)
+        else:
+            print(str(row[0])+'needs manual method')
+            obj = galaxy(row[0],row[4],0)
+            obj.big_mom0_map()
+            with open('/users/jburke/ebhis_scripts/full_workflow_results/need_manual_m0maps.csv','a')as file:
                 write= csv.writer(file)
                 write.writerow(row)
 
