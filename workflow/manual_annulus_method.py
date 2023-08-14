@@ -8,6 +8,10 @@ class galaxy:
         self.name=row[0]
         self.ra = row[1]
         self.dec = row[2]
+        self.dist = row[3]
+        self.radvel = row[4]
+        self.mag21 = row[5]
+        self.w50 = row[6]
 
     def region_vals(self):
         map_name = self.name+'/no_filter_moment0'
@@ -33,24 +37,66 @@ class galaxy:
         setattr(self,'norm_flux',norm_flux_jy)
         setattr(self,'norm_flux_uncert',norm_uncert)
 
-with open('/users/jburke/ebhis_scripts/workflow_results/need_manual_analysis.csv','r') as f:
-    reader = csv.reader(f)
+#looks for csv file to store gals that can't be analysed, makes one if not there
+csvpath = '/users/jburke/ebhis_scripts/full_workflow_results/cant_analyse.csv'
+if not os.path.exists(csvpath):
+    with open('/users/jburke/Desktop/test_gal_list.csv','r') as f:
+        reader = csv.reader(f)
+        header = next(reader)
+        with open('/users/jburke/ebhis_scripts/full_workflow_results/cant_analyse.csv','w') as csv_file:
+            csv_writer = csv.writer(csv_file)
+            csv_writer.writerow(header)
+else:
+    pass
+
+#makes a list of all galaxy names that have been analysed
+galaxies_analysed =[]
+with open('/users/jburke/ebhis_scripts/full_workflow_results/final_results.csv','r') as csv_file:
+    reader = csv.reader(csv_file)
+    header = next(reader)
     for row in reader:
-        obj=galaxy(row)
-        obj.region_vals()
-        #save results?
-        save = input('Save results?: (y/n) ')
-        if save == 'y':
-            file1 = '/users/jburke/ebhis_scripts/workflow_results/final_results.csv'
-            with open(file1,'a') as file:
-                a= obj.norm_flux
-                b=obj.norm_flux_uncert
-                lines = [obj.name,
-                         obj.ra,
-                         obj.dec,
-                         str(a),
-                         str(b),
-                         '\n']
-                file.write(','.join(lines))
+        name = row[0]
+        galaxies_analysed.append(name)
+with open('/users/jburke/ebhis_scripts/full_workflow_results/cant_analyse.csv','r') as csv_file:
+    reader = csv.reader(csv_file)
+    header = next(reader)
+    for row in reader:
+        name = row[0]
+        galaxies_analysed.append(name)
+
+
+
+
+
+with open('/users/jburke/ebhis_scripts/full_workflow_results/need_manual_analysis.csv','r') as f:
+    reader = csv.reader(f)
+    header = next(reader)
+    for row in reader:
+        print('...')
+        print(row[0])
+        print('...')
+        if row[0] in galaxies_analysed:
+            print(str(row[0])+' already analysed')
         else:
-            print(obj.name,' not saved')
+            obj=galaxy(row)
+            obj.region_vals()
+            #save results?
+            save = input('Save results?: (y/n) ')
+            if save == 'y':
+                file1 = '/users/jburke/ebhis_scripts/full_workflow_results/final_results.csv'
+                with open(file1,'a') as file:
+                    a= obj.norm_flux
+                    b=obj.norm_flux_uncert
+                    lines = [obj.name,
+                            obj.ra,
+                            obj.dec,
+                            obj.dist,
+                            obj.radvel,
+                            obj.mag21,
+                            obj.w50,
+                            str(a),
+                            str(b),
+                            '\n']
+                    file.write(','.join(lines))
+            else:
+                print(obj.name,' not saved')
