@@ -96,8 +96,10 @@ class Gal:
         ann_diff2 = abs(sum_ann2-sum_ann3)/sum_ann3
         ann_diff3 = abs(sum_ann3-sum_ann4)/sum_ann4
         #is there a galaxy present(outer annulus - inner circle)
-        difference = ((sum1/npix1)- (sum_ann4))/(sum1/npix1)
-        if difference>=0.1:
+        gal_val = (sum1/npix1) #kalvin per pixel for galaxy circle
+        thresh = sum_ann4 + 3*rms_ann4 #noise per pixel + 3 sigma
+
+        if gal_val>=thresh:
             if ann_diff1<= 0.1:
                 print('First annuli have similar values (<10%)=> proceed ')
                 self.annulus_calc(sum1,npix1,sum2,npix2,rms_ann1)
@@ -113,7 +115,7 @@ class Gal:
                     write= csv.writer(file)
                     write.writerow(self.row)
         else:
-            print('galaxy is not detected(<10%)=> DO BY HAND')
+            print('galaxy is not detected=> DO BY HAND')
             with open('/users/jburke/ebhis_scripts/full_workflow_results/need_manual_analysis.csv','a') as file:
                 write= csv.writer(file)
                 write.writerow(self.row)
