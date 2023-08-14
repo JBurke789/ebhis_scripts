@@ -30,9 +30,9 @@ def data_request(name, ra ,dec):
     command = 'python /vol/ebhis2/data1/bwinkel/software/hpxtools/hpxgrid4.py -ds EBHIS -s E -l ' + ra_vals + dec_vals + filename
     os.system(command)    
 
-autogen_file_path = '/users/jburke/ebhis_scripts/full_workflow_results/auto_analyse.csv'
-mw_overlap_file_path = '/users/jburke/ebhis_scripts/full_workflow_results/MW_overlap.csv'
-no_w50_file_path ='/users/jburke/ebhis_scripts/full_workflow_results/no_linewidth.csv'
+autogen_file_path = '/users/jburke/ebhis_scripts/workflow_results/auto_analyse.csv'
+mw_overlap_file_path = '/users/jburke/ebhis_scripts/workflow_results/MW_overlap.csv'
+no_w50_file_path ='/users/jburke/ebhis_scripts/workflow_results/no_linewidth.csv'
 
 
 print('...')

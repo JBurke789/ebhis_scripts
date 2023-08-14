@@ -48,10 +48,25 @@ class Gal:
         uncert = bg_rms*np.sqrt(inner_npix)
         frac_uncert = uncert/clean_flux
         norm_uncert = frac_uncert*norm_flux_jy
-        print('Flux = '+ str(flux_jy)+' p/m '+ str(uncert))
-        print('norm flux = '+ str(norm_flux_jy)+' p/m '+ str(norm_uncert))
-        print('rms of background: '+ str(bg_rms))
-        self.write_output(norm_flux_jy,norm_uncert)
+        lowest_val = norm_flux_jy-norm_uncert
+        if lowest_val>=0:
+            self.write_output(norm_flux_jy,norm_uncert)
+            print('Flux = '+ str(flux_jy)+' p/m '+ str(uncert))
+            print('norm flux = '+ str(norm_flux_jy)+' p/m '+ str(norm_uncert))
+            print('rms of background: '+ str(bg_rms))
+        else:
+            print('negative norm flux => DO BY HAND')
+            with open('/users/jburke/ebhis_scripts/workflow_results/need_manual_analysis.csv','a') as file:
+                lines = [self.name,
+                        self.ra,
+                        self.dec,
+                        self.dist,
+                        self.radvel,
+                        self.mag21,
+                        self.w50,
+                        '\n']
+                file.write(','.join(lines))
+
 
     def extract_annuli_vals(self):
         self.make_region_files()
@@ -91,15 +106,15 @@ class Gal:
         rms_ann2 = np.sqrt((npix3/(npix3-npix2))*(rms3**2 - (npix2/(npix3))*rms2**2))
         rms_ann3 = np.sqrt((npix4/(npix4-npix3))*(rms4**2 - (npix3/(npix4))*rms3**2))
         rms_ann4 = np.sqrt((npix5/(npix5-npix4))*(rms5**2 - (npix4/(npix5))*rms4**2))
+
+        
         #check if annuli have same vals
         ann_diff1 = abs(sum_ann1-sum_ann2)/sum_ann2
         ann_diff2 = abs(sum_ann2-sum_ann3)/sum_ann3
         ann_diff3 = abs(sum_ann3-sum_ann4)/sum_ann4
         #is there a galaxy present(outer annulus - inner circle)
-        gal_val = (sum1/npix1) #kalvin per pixel for galaxy circle
-        thresh = sum_ann4 + 3*rms_ann4 #noise per pixel + 3 sigma
-
-        if gal_val>=thresh:
+        detect_thresh = (sum_ann4 + 3*rms_ann4)*npix1
+        if detect_thresh<=sum1:
             if ann_diff1<= 0.1:
                 print('First annuli have similar values (<10%)=> proceed ')
                 self.annulus_calc(sum1,npix1,sum2,npix2,rms_ann1)
@@ -111,17 +126,17 @@ class Gal:
                 self.annulus_calc(sum3,npix3,sum4,npix4,rms_ann3)
             else:
                 print('Large variation between annuli(>10%)=> DO BY HAND')
-                with open('/users/jburke/ebhis_scripts/full_workflow_results/need_manual_analysis.csv','a') as file:
+                with open('/users/jburke/ebhis_scripts/workflow_results/need_manual_analysis.csv','a') as file:
                     write= csv.writer(file)
                     write.writerow(self.row)
         else:
             print('galaxy is not detected=> DO BY HAND')
-            with open('/users/jburke/ebhis_scripts/full_workflow_results/need_manual_analysis.csv','a') as file:
+            with open('/users/jburke/ebhis_scripts/workflow_results/need_manual_analysis.csv','a') as file:
                 write= csv.writer(file)
                 write.writerow(self.row)
 
     def write_output(self,norm_flux_jy,norm_uncert):
-        file1 = '/users/jburke/ebhis_scripts/full_workflow_results/final_results.csv'
+        file1 = '/users/jburke/ebhis_scripts/workflow_results/final_results.csv'
         with open(file1,'a') as file:
             a= norm_flux_jy
             b=norm_uncert
@@ -142,17 +157,17 @@ class Gal:
 with open('/users/jburke/Desktop/test_gal_list.csv','r') as f:
     reader = csv.reader(f)
     header = next(reader)
-    with open('/users/jburke/ebhis_scripts/full_workflow_results/need_manual_analysis.csv','w') as f:
+    with open('/users/jburke/ebhis_scripts/workflow_results/need_manual_analysis.csv','w') as f:
         csv_writer = csv.writer(f)
         csv_writer.writerow(header)
 #empty csv to save final results in
     header_new = header + ['flux [Jy km/s BA^-1]','uncert']
-    with open('/users/jburke/ebhis_scripts/full_workflow_results/final_results.csv','w') as f:
+    with open('/users/jburke/ebhis_scripts/workflow_results/final_results.csv','w') as f:
         csv_writer = csv.writer(f)
         csv_writer.writerow(header_new)
 
 #go through csv of galaxies woth mom0 maps and run analysis on them and save results to correct csv file
-with open('/users/jburke/ebhis_scripts/full_workflow_results/gals_with_m0maps.csv','r') as f:
+with open('/users/jburke/ebhis_scripts/workflow_results/gals_with_m0maps.csv','r') as f:
     reader = csv.reader(f)
     header = next(reader)
     for row in reader:
