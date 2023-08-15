@@ -113,8 +113,11 @@ class Gal:
         ann_diff2 = abs(sum_ann2-sum_ann3)/sum_ann3
         ann_diff3 = abs(sum_ann3-sum_ann4)/sum_ann4
         #is there a galaxy present(outer annulus - inner circle)
-        detect_thresh = (sum_ann4 + 3*rms_ann4)*npix1
-        if detect_thresh<=sum1:
+        detect_thresh1 = (sum_ann1 + 3*rms_ann1)*npix1
+        detect_thresh2 = (sum_ann2 )*npix1
+        detect_thresh3 = (sum_ann3 + 3*rms_ann3)*npix1
+        detect_thresh4 = (sum_ann4 + 3*rms_ann4)*npix1
+        if detect_thresh2<=sum1 :
             if ann_diff1<= 0.1:
                 print('First annuli have similar values (<10%)=> proceed ')
                 self.annulus_calc(sum1,npix1,sum2,npix2,rms_ann1)
