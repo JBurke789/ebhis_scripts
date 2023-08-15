@@ -33,6 +33,7 @@ class galaxy:
         uncert = bg_rms*np.sqrt(in_npix)
         frac_uncert = uncert/clean_flux
         norm_uncert = frac_uncert*norm_flux_jy 
+        print('background rms = '+str(bg_rms))
         print('norm flux = '+ str(norm_flux_jy)+' p/m '+ str(norm_uncert))
         setattr(self,'norm_flux',norm_flux_jy)
         setattr(self,'norm_flux_uncert',norm_uncert)
@@ -84,6 +85,7 @@ with open('/users/jburke/ebhis_scripts/workflow_results/need_manual_analysis.csv
             save = input('Save results?: (y/n) ')
             if save == 'y':
                 file1 = '/users/jburke/ebhis_scripts/workflow_results/final_results.csv'
+                note=input('Note:')
                 with open(file1,'a') as file:
                     a= obj.norm_flux
                     b=obj.norm_flux_uncert
@@ -96,6 +98,7 @@ with open('/users/jburke/ebhis_scripts/workflow_results/need_manual_analysis.csv
                             obj.w50,
                             str(a),
                             str(b),
+                            str(note),
                             '\n']
                     file.write(','.join(lines))
             else:
