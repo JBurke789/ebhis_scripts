@@ -36,7 +36,7 @@ class Gal:
             lines = ['#CRTFv0 CASA Region Text Format version 0 \n','ellipse [[',self.ra,'deg,',self.dec,'deg], [3500arcsec, 3500arcsec], 0.00000000deg]']
             file.write(''.join(lines))
 
-    def annulus_calc(self,inner_sum,inner_npix,outer_sum,outer_npix,rms):
+    def annulus_calc(self,inner_sum,inner_npix,outer_sum,outer_npix):
         #calculates flux from values in annuli
         bg_flux = outer_sum-inner_sum
         bg_npix = outer_npix-inner_npix
@@ -44,7 +44,7 @@ class Gal:
         clean_flux = inner_sum - bg_per_pix*inner_npix
         flux_jy = clean_flux/1.28
         norm_flux_jy = flux_jy/8.64
-        bg_rms = rms
+        bg_rms = 0.09 #rms = 90mK, from EBHIS calibration
         uncert = bg_rms*np.sqrt(inner_npix)
         frac_uncert = uncert/clean_flux
         norm_uncert = frac_uncert*norm_flux_jy
@@ -74,27 +74,27 @@ class Gal:
         stats1 = imstat(imagename=str(self.name)+'/no_filter_moment0',
                 region = str(self.name)+'/region1.crtf')
         sum1 = stats1['sum']
-        rms1 = stats1['rms']
+        #rms1 = stats1['rms']
         npix1 = stats1['npts']
         stats2 = imstat(imagename=str(self.name)+'/no_filter_moment0',
                 region = str(self.name)+'/region2.crtf')
         sum2 = stats2['sum']
-        rms2 = stats2['rms']
+        #rms2 = stats2['rms']
         npix2 = stats2['npts']
         stats3 = imstat(imagename=str(self.name)+'/no_filter_moment0',
                 region = str(self.name)+'/region3.crtf')
         sum3 = stats3['sum']
-        rms3 = stats3['rms']
+        #rms3 = stats3['rms']
         npix3 = stats3['npts']
         stats4 = imstat(imagename=str(self.name)+'/no_filter_moment0',
                 region = str(self.name)+'/region4.crtf')
         sum4 = stats4['sum']
-        rms4 = stats4['rms']
+        #rms4 = stats4['rms']
         npix4 = stats4['npts']
         stats5 = imstat(imagename=str(self.name)+'/no_filter_moment0',
                 region = str(self.name)+'/region5.crtf')
         sum5 = stats5['sum']
-        rms5 = stats5['rms']
+        #rms5 = stats5['rms']
         npix5 = stats5['npts']
         #calculate noise per pixel in each annuli
         sum_ann1 = (sum2-sum1)/(npix2-npix1)
@@ -102,31 +102,33 @@ class Gal:
         sum_ann3 = (sum4-sum3)/(npix4-npix3)
         sum_ann4 = (sum5-sum4)/(npix5-npix4)
         #calculate rms of annuli
+        """
         rms_ann1 = np.sqrt((npix2/(npix2-npix1))*(rms2**2 - (npix1/(npix2))*rms1**2))
         rms_ann2 = np.sqrt((npix3/(npix3-npix2))*(rms3**2 - (npix2/(npix3))*rms2**2))
         rms_ann3 = np.sqrt((npix4/(npix4-npix3))*(rms4**2 - (npix3/(npix4))*rms3**2))
         rms_ann4 = np.sqrt((npix5/(npix5-npix4))*(rms5**2 - (npix4/(npix5))*rms4**2))
-
+        """
         
         #check if annuli have same vals
         ann_diff1 = abs(sum_ann1-sum_ann2)/sum_ann2
         ann_diff2 = abs(sum_ann2-sum_ann3)/sum_ann3
         ann_diff3 = abs(sum_ann3-sum_ann4)/sum_ann4
-        #is there a galaxy present(outer annulus - inner circle)
-        detect_thresh1 = (sum_ann1 + 3*rms_ann1)*npix1
-        detect_thresh2 = (sum_ann2 )*npix1
-        detect_thresh3 = (sum_ann3 + 3*rms_ann3)*npix1
-        detect_thresh4 = (sum_ann4 + 3*rms_ann4)*npix1
+        #detection threshold (bg+3*rms)
+        rms = 0.09
+        detect_thresh1 = (sum_ann1 + 3*rms)*npix1
+        detect_thresh2 = (sum_ann2 + 3*rms)*npix1
+        detect_thresh3 = (sum_ann3 + 3*rms)*npix1
+        detect_thresh4 = (sum_ann4 + 3*rms)*npix1
         if detect_thresh2<=sum1 :
             if ann_diff1<= 0.1:
                 print('First annuli have similar values (<10%)=> proceed ')
-                self.annulus_calc(sum1,npix1,sum2,npix2,rms_ann1)
+                self.annulus_calc(sum1,npix1,sum2,npix2)
             elif ann_diff1>= 0.1 and ann_diff2<= 0.1:
                 print('Second annuli have similar values (<10%)=> proceed ')
-                self.annulus_calc(sum2,npix2,sum3,npix3,rms_ann2)
+                self.annulus_calc(sum2,npix2,sum3,npix3)
             elif ann_diff2>= 0.1 and ann_diff3<= 0.1:
                 print('Second annuli have similar values (<10%)=> proceed ')
-                self.annulus_calc(sum3,npix3,sum4,npix4,rms_ann3)
+                self.annulus_calc(sum3,npix3,sum4,npix4)
             else:
                 print('Large variation between annuli(>10%)=> DO BY HAND')
                 with open('/users/jburke/ebhis_scripts/workflow_results/need_manual_analysis.csv','a') as file:

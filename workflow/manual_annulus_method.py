@@ -16,27 +16,34 @@ class galaxy:
     def region_vals(self):
         map_name = self.name+'/no_filter_moment0'
         imview(map_name)
-        in_sum = float(input('Inner sum: ')) 
-        in_npix = float(input('Inner npix: '))
-        in_rms =  float(input('Inner rms: '))
-        out_sum = float(input('Outer sum: ')) 
-        out_npix = float(input('Outer npix: '))
-        out_rms =  float(input('Outer rms: '))
-        bg_rms = np.sqrt((out_npix/(out_npix-in_npix))*(out_rms**2 - (in_npix/(out_npix))*in_rms**2))
-        #calculates flux from values in annuli
-        bg_flux = out_sum-in_sum
-        bg_npix = out_npix-in_npix
-        bg_per_pix = bg_flux/bg_npix
-        clean_flux = in_sum - bg_per_pix*in_npix
-        flux_jy = clean_flux/1.28
-        norm_flux_jy = flux_jy/8.64
-        uncert = bg_rms*np.sqrt(in_npix)
-        frac_uncert = uncert/clean_flux
-        norm_uncert = frac_uncert*norm_flux_jy 
-        print('background rms = '+str(bg_rms))
-        print('norm flux = '+ str(norm_flux_jy)+' p/m '+ str(norm_uncert))
-        setattr(self,'norm_flux',norm_flux_jy)
-        setattr(self,'norm_flux_uncert',norm_uncert)
+        gal_vis = input('Is galaxy visible: (y/n) ')
+        if gal_vis == 'n':
+            with open('/users/jburke/ebhis_scripts/workflow_results/cant_analyse.csv','a') as file:
+                write= csv.writer(file)
+                write.writerow(row)
+        else: 
+            in_sum = float(input('Inner sum: '))
+            in_npix = float(input('Inner npix: '))
+            #in_rms =  float(input('Inner rms: '))
+            out_sum = float(input('Outer sum: ')) 
+            out_npix = float(input('Outer npix: '))
+            #out_rms =  float(input('Outer rms: '))
+            #bg_rms = np.sqrt((out_npix/(out_npix-in_npix))*(out_rms**2 - (in_npix/(out_npix))*in_rms**2))
+            bg_rms = 0.09# rms=90mK from ebhis calibration
+            #calculates flux from values in annuli
+            bg_flux = out_sum-in_sum
+            bg_npix = out_npix-in_npix
+            bg_per_pix = bg_flux/bg_npix
+            clean_flux = in_sum - bg_per_pix*in_npix
+            flux_jy = clean_flux/1.28
+            norm_flux_jy = flux_jy/8.64
+            uncert = bg_rms*np.sqrt(in_npix)
+            frac_uncert = uncert/clean_flux
+            norm_uncert = frac_uncert*norm_flux_jy 
+            print('background rms = '+str(bg_rms))
+            print('norm flux = '+ str(norm_flux_jy)+' p/m '+ str(norm_uncert))
+            setattr(self,'norm_flux',norm_flux_jy)
+            setattr(self,'norm_flux_uncert',norm_uncert)
 
 #looks for csv file to store gals that can't be analysed, makes one if not there
 csvpath = '/users/jburke/ebhis_scripts/workflow_results/cant_analyse.csv'
