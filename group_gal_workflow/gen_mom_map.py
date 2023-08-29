@@ -2,7 +2,7 @@ import csv
 import numpy as np
 import os
 
-
+imview('raw_image.im')
 low_chan= input('Low Channel: ')
 high_chan=input('High Channel: ')
 #function to make moment 0 map, given the frame numbers of the galaxy
