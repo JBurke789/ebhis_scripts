@@ -15,8 +15,6 @@ while name!='':
     name = input('galaxy name:')
     if name!='':
         galaxy_names.append(name)
-print(galaxy_names)
-
 
 ra_vals =[]
 dec_vals=[]
@@ -36,7 +34,8 @@ for i in galaxy_names:
                 #generate region file for each galaxy in  group
                 file1 =  row[0]+'region.crtf'
                 with open(file1,'w') as file:
-                    lines = ['#CRTFv0 CASA Region Text Format version 0 \n','circle [[',row[1],'deg,',row[2],'deg], 20arcsec],label="',row[0],'"']
+                    lines = ['#CRTFv0 CASA Region Text Format version 0 \n',
+                             'ellipse [[',row[1],'deg,',row[2],'deg], [800arcsec, 800arcsec], 0.00000000deg],label="',row[0],'"']
                     file.write(''.join(lines))
 
   
@@ -50,5 +49,5 @@ dec_val = ' ' + str(min(dec_vals)-2) + ' ' + str(max(dec_vals)+2)
 filename = ' data_cube.fits'
 
 command = 'python /vol/ebhis2/data1/bwinkel/software/hpxtools/hpxgrid4.py -ds EBHIS -s E -l ' + ra_val + dec_val + filename
-os.system(command)    
+#os.system(command)    
                 
