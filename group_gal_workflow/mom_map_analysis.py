@@ -9,8 +9,6 @@ with open('/users/jburke/ebhis_scripts/group_gal_results/group_results.csv','r')
     for row in reader:
         gal_results.append(row)
 
-print(gal_results)
-
 imview('moment0.im')
 group = input('group ID: ')
 
@@ -44,7 +42,6 @@ if save == 'y':
     if group not in groups_analysed:
         new_row = [group,str(norm_flux_jy),str(norm_uncert)]
         gal_results.append(new_row)
-
     sorted_gal_results= sorted(gal_results,key = lambda x: float(x[0]))
     with open('/users/jburke/ebhis_scripts/group_gal_results/group_results.csv','w') as f:
         csv_writer = csv.writer(f)
@@ -52,4 +49,13 @@ if save == 'y':
         csv_writer.writerow(header)
         csv_writer.writerows(sorted_gal_results)
 
+    galaxy_names = []
+    name='initial'
+    while name!='':
+        name = input('galaxy name:')
+        if name!='':
+            galaxy_names.append(name)
+    with open('gals_analysed.txt', "w") as file:
+        for item in galaxy_names:
+            file.write(item + "\n")
 
