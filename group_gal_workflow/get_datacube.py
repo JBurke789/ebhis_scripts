@@ -49,5 +49,5 @@ dec_val = ' ' + str(min(dec_vals)-2) + ' ' + str(max(dec_vals)+2)
 filename = ' data_cube.fits'
 
 command = 'python /vol/ebhis2/data1/bwinkel/software/hpxtools/hpxgrid4.py -ds EBHIS -s E -l ' + ra_val + dec_val + filename
-#os.system(command)    
+os.system(command)    
                 
