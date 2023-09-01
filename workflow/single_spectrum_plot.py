@@ -7,7 +7,7 @@ import csv
 
 name = input('galaxy name: ')
 
-array = np.load(name + '/spectrum.npy')
+array = np.load('ann_spectrum.npy')
 
 with open('/users/jburke/Desktop/full_gal_list.csv','r') as f:
    reader = csv.reader(f)
