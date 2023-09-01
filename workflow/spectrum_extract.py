@@ -25,20 +25,20 @@ def extract_fluxes(name):
   ia.open(name+'/raw_image.im')
   flux = ia.getregion(name+'/spec_region2.crtf')
   ia.close()
-  temp_out =np.sum(np.sum(flux,axis=0),axis=0) #collapse into 1D array
+  temp_out =np.sum(np.sum(flux,axis=0),axis=0) #collapse into 1D array    
   #print(sumspec2)
   stats1 = imstat(imagename=name+'/raw_image.im',
                   region =name+'/spec_region1.crtf')
   stats2 = imstat(imagename=name+'/raw_image.im',
                   region =name+'/spec_region2.crtf')
   bg_temp= temp_out-temp_in
-  bg_temp_inner = bg_temp*(float(stats1['npts'])/(float(stats2['npts']-float(stats1['npts']))))
+  bg_temp_inner = bg_temp*(float(stats1['npts'])/(float(stats2['npts'])-float(stats1['npts'])))
   return temp_in,temp_out,stats1,stats2,bg_temp_inner
 
 def get_vel(name,temp_in):
   ia.open(name+'/raw_image.im')
   csys=ia.coordsys()
-  x=np.array(np.arange(0,len(temp_in),1.)) # need floating point array
+  x=np.array(np.arange(0,len(temp_in),1.)) #need floating point array
   freqs = copy.deepcopy(x)
   velo=copy.deepcopy(x)
   blctemp=[0,0,0]
