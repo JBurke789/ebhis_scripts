@@ -56,6 +56,15 @@ def save_npy(velo,flux_inner,bg_flux_inner):
   output = np.stack((velo,flux_inner,bg_flux_inner),axis=0)
   np.save('ann_spectrum.npy',output)
 
+def save_csv(velo,flux_inner,bg_flux_inner):
+  headers = ['velocity','galaxy flux','normalised bg']
+  data = list(zip(velo,flux_inner,bg_flux_inner))
+  with open('spectrum_NGC2403.csv','w') as f:
+    csv_writer=csv.writer(f)
+    csv_writer.writerow(headers)
+    csv_writer.writerows(data)
+
+
 name = input('Galaxy Name:')
 
 with open('/users/jburke/Desktop/full_gal_list.csv','r') as f:
@@ -72,5 +81,5 @@ vel = get_vel(temp_in)
 flux_in =unit_conversion(temp_in)
 flux_ann=unit_conversion(temp_ann)
 bg_flux_inner=unit_conversion(bg_temp_inner)
-save_npy(vel,flux_in,bg_flux_inner)
-
+#save_npy(vel,flux_in,bg_flux_inner)
+save_csv(vel,flux_in,bg_flux_inner)
