@@ -7,6 +7,7 @@ import scipy as sp
 from scipy import optimize
 from scipy import integrate
 from scipy import stats
+import os
 
 def import_spectrum(array):
     vel = array[0]
@@ -90,17 +91,45 @@ def sum_spectrum(vel,baselined_flux):
 
     #integrate to get total flux
     tot_flux = sp.integrate.simps(y_sum_vals,x_sum_vals)
-    print('Total Flux:',tot_flux)
+    rms_jy = 0.09/(1.28*8.64)
+    uncert = rms_jy*len(x_sum_vals)
+    print('Total Flux:',tot_flux,'+- ',uncert)
     #print(x_sum_vals)
     #print(y_sum_vals)
-    return tot_flux
+    return tot_flux,uncert
 
 
 array = np.load('ann_spectrum.npy')
 vel, inner_flux,bg_flux = import_spectrum(array)
-
 baselined_flux = baselining(vel,inner_flux,bg_flux)
-total_flux = sum_spectrum(vel,baselined_flux)
+total_flux,uncert = sum_spectrum(vel,baselined_flux)
+
+save = input('Save results: y/n ')
+if save == 'y':
+    name = input('galaxy name: ')    
+    #looks for csv file to store spectral results
+    csvpath = '/users/jburke/ebhis_scripts/workflow_results/spectral_lower_lim_results.csv'
+    if not os.path.exists(csvpath):
+        with open('/users/jburke/ebhis_scripts/workflow_results/final_results.csv','r') as f:
+            reader = csv.reader(f)
+            header = next(reader)
+            with open('/users/jburke/ebhis_scripts/workflow_results/spectral_lower_lim_results.csv','w') as csv_file:
+                csv_writer = csv.writer(csv_file)
+                csv_writer.writerow(header)
+    else:
+        pass
+
+    #get galaxy data from full list
+    with open('/users/jburke/Desktop/full_gal_list.csv','r') as f:
+        reader = csv.reader(f)
+        header = next(reader)
+        for row in reader:
+            if row[0]==name:
+                row.append(str(total_flux))
+                row.append(str(uncert))
+                with open('/users/jburke/ebhis_scripts/workflow_results/spectral_lower_lim_results.csv','a') as file:
+                    file.write(','.join(row))
+
 
 
 
