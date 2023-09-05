@@ -14,7 +14,7 @@ def make_regions(name,ra,dec):
     file.write(''.join(lines))
   file2 = name+ '/spec_region2.crtf'
   with open(file2,'w') as file:
-    lines = ['#CRTFv0 CASA Region Text Format version 0 \n','ellipse [[',ra,'deg,',dec,'deg], [3500arcsec, 3500arcsec], 0.00000000deg]']
+    lines = ['#CRTFv0 CASA Region Text Format version 0 \n','annulus [[',ra,'deg,',dec,'deg], [1600arcsec, 3500arcsec]]']
     file.write(''.join(lines))
 
 def extract_fluxes(name):
@@ -25,15 +25,14 @@ def extract_fluxes(name):
   ia.open(name+'/raw_image.im')
   flux = ia.getregion(name+'/spec_region2.crtf')
   ia.close()
-  temp_out =np.sum(np.sum(flux,axis=0),axis=0) #collapse into 1D array    
+  temp_ann =np.sum(np.sum(flux,axis=0),axis=0) #collapse into 1D array    
   #print(sumspec2)
   stats1 = imstat(imagename=name+'/raw_image.im',
                   region =name+'/spec_region1.crtf')
   stats2 = imstat(imagename=name+'/raw_image.im',
                   region =name+'/spec_region2.crtf')
-  bg_temp= temp_out-temp_in
-  bg_temp_inner = bg_temp*(float(stats1['npts'])/(float(stats2['npts'])-float(stats1['npts'])))
-  return temp_in,temp_out,stats1,stats2,bg_temp_inner
+  bg_temp_inner = (temp_ann/float(stats2['npts']))*float(stats1['npts'])          
+  return temp_in,temp_ann,stats1,stats2,bg_temp_inner
 
 def get_vel(name,temp_in):
   ia.open(name+'/raw_image.im')
@@ -75,10 +74,10 @@ with open('/users/jburke/ebhis_scripts/workflow_results/MW_overlap.csv','r') as 
       w50 = row[6]
 
       make_regions(name,ra,dec)
-      temp_in,temp_out,stats1,stats2,bg_temp_inner=extract_fluxes(name)
+      temp_in,temp_ann,stats1,stats2,bg_temp_inner=extract_fluxes(name)
       vel = get_vel(name,temp_in)
       flux_in =unit_conversion(temp_in)
-      flux_out=unit_conversion(temp_out)
+      flux_ann=unit_conversion(temp_ann)
       bg_flux_inner=unit_conversion(bg_temp_inner)
       save_npy(name,vel,flux_in,bg_flux_inner)
 
