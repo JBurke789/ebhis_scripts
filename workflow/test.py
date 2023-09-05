@@ -25,9 +25,18 @@ ax1.legend()
 
 def on_click(event):
     if event.inaxes is not None:
-        x, y = event.xdata, event.ydata
-        print(x,y)
+        x = event.xdata
+        x_vals.append(x)
 
+x_vals=[]
 fig1.canvas.mpl_connect('button_press_event', on_click)
-
 plt.show()
+
+pairs = list(zip(x_vals[::2], x_vals[1::2]))
+
+for i in pairs:
+    low = i[0]
+    high = i[1]
+
+    
+
