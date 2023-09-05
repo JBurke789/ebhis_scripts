@@ -70,6 +70,7 @@ def sum_spectrum(vel,baselined_flux):
     ax2.plot(vel,baselined_flux,label='baselined flux')
     ax2.set_xlabel('Velocity [km/s]')
     ax2.set_ylabel('Flux per Beam Area [Jy/BA]')
+    ax2.set_ylim(-10,10)
     ax2.legend()
     x_sum_lims=[]
     fig2.canvas.mpl_connect('button_press_event', on_click)
@@ -99,7 +100,7 @@ def sum_spectrum(vel,baselined_flux):
     return tot_flux,uncert
 
 
-array = np.load('ann_spectrum.npy')
+array = np.load('spectrum.npy')
 vel, inner_flux,bg_flux = import_spectrum(array)
 baselined_flux = baselining(vel,inner_flux,bg_flux)
 total_flux,uncert = sum_spectrum(vel,baselined_flux)
@@ -124,11 +125,25 @@ if save == 'y':
         reader = csv.reader(f)
         header = next(reader)
         for row in reader:
+            ra = row[1]
+            dec=row[2]
+            dist= row[3]
+            rad_vel=row[4]
+            mag = row[5]
+            w50 = row[6]
             if row[0]==name:
-                row.append(str(total_flux))
-                row.append(str(uncert))
                 with open('/users/jburke/ebhis_scripts/workflow_results/spectral_lower_lim_results.csv','a') as file:
-                    file.write(','.join(row))
+                    lines = [name,
+                            ra,
+                            dec,
+                            dist,
+                            rad_vel,
+                            mag,
+                            w50,
+                            str(total_flux),
+                            str(uncert),
+                            '\n']
+                    file.write(','.join(lines))
 
 
 
