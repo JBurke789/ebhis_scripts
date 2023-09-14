@@ -8,21 +8,22 @@ from scipy import optimize
 from scipy import integrate
 from scipy import stats
 import os
+import warnings
+# import fit models from the lmfit package
+from lmfit import Model
+from lmfit.models import GaussianModel
 
 """
-run in directory of galaxy
+run script in directory of galaxy
+
+
+extracting part of spectrum containing galaxy
 """
 def import_spectrum(array):
     vel = array[0]
     inner_flux = array[1]
     bg_flux = array[2]
     return vel, inner_flux,bg_flux
-
-def on_click(event):
-    if event.inaxes is not None:
-        x = event.xdata
-        x_lims.append(x)
-        print(x)
 
 
 def peak_extracting(vel,inner_flux,bg_flux):
@@ -70,22 +71,23 @@ ax1.set_ylabel('Flux per Beam Area [Jy/BA]')
 ax1.legend()
 plt.show(block=False)
 
-#fitting with a single gaussian
-def gauss(p,x):#define gaussian function
-    return p[0]*np.exp( -(x-p[1])**2 /(2*p[2]**2)) +p[3]
-def resids(p):#define vector of residuals
-    return gauss(p,x_vals) - y_vals
-#initial guess of parameters
-#p[0]= amplitude- value of peak
-#p[1]= mean- peak center velocity
-#p[2]= standard deviation, slightly above half of height 
-#p[3]= offset
-p_init = [0, 0, 0, 0.]
-p_init[0] = input('Amplitude: ')
-p_init[1] = input('Mean (peak centre): ')
-p_init[2] = input('Standev (50pc bw):')
-#run optimization
-out = sp.optimize.least_squares(resids,p_init)
-print(out.x)#print out parameters found by the fitting
-ax1.plot(x_vals,gauss(out.x,x_vals))#plot fit
+
+"""
+fitting galaxy spectrum
+"""
+
+x_vals=np.array(x_vals)
+y_vals=np.array(y_vals)
+
+peak = GaussianModel()
+
+pars= peak.guess(y_vals,x=x_vals,amplitude=3)
+result = peak.fit(y_vals,pars,x=x_vals)
+print(result.fit_report())
+ax1.plot(x_vals,result.best_fit)
+print(result.params['center'].value)
+print(result.params['fwhm'].value)
+
+
 plt.show()
+
