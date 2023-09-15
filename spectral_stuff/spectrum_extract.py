@@ -10,11 +10,15 @@ import matplotlib.pyplot as plt
 def make_regions(name,ra,dec):
   file1 = name+ '/spec_region1.crtf'
   with open(file1,'w') as file:
-    lines = ['#CRTFv0 CASA Region Text Format version 0 \n','ellipse [[',ra,'deg,',dec,'deg], [1600arcsec, 1600arcsec], 0.00000000deg]']
+    lines = ['#CRTFv0 CASA Region Text Format version 0 \n','ellipse [[',ra,'deg,',dec,'deg], [2000arcsec, 2000arcsec], 0.00000000deg]']
     file.write(''.join(lines))
   file2 = name+ '/spec_region2.crtf'
   with open(file2,'w') as file:
-    lines = ['#CRTFv0 CASA Region Text Format version 0 \n','annulus [[',ra,'deg,',dec,'deg], [1600arcsec, 3500arcsec]]']
+    lines = ['#CRTFv0 CASA Region Text Format version 0 \n','annulus [[',ra,'deg,',dec,'deg], [3500arcsec, 4500arcsec]]']
+    file.write(''.join(lines))
+  file3 = name+ '/spec_region3.crtf'
+  with open(file3,'w') as file:
+    lines = ['#CRTFv0 CASA Region Text Format version 0 \n','annulus [[',ra,'deg,',dec,'deg], [6500arcsec, 7500arcsec]]']
     file.write(''.join(lines))
 
 def extract_fluxes(name):
@@ -25,14 +29,21 @@ def extract_fluxes(name):
   ia.open(name+'/raw_image.im')
   flux = ia.getregion(name+'/spec_region2.crtf')
   ia.close()
-  temp_ann =np.sum(np.sum(flux,axis=0),axis=0) #collapse into 1D array    
+  temp_ann1 =np.sum(np.sum(flux,axis=0),axis=0) #collapse into 1D array
+  ia.open(name+'/raw_image.im')
+  flux = ia.getregion(name+'/spec_region3.crtf')
+  ia.close()
+  temp_ann2 =np.sum(np.sum(flux,axis=0),axis=0)     
   #print(sumspec2)
   stats1 = imstat(imagename=name+'/raw_image.im',
                   region =name+'/spec_region1.crtf')
   stats2 = imstat(imagename=name+'/raw_image.im',
                   region =name+'/spec_region2.crtf')
-  bg_temp_inner = (temp_ann/float(stats2['npts']))*float(stats1['npts'])          
-  return temp_in,temp_ann,stats1,stats2,bg_temp_inner
+  stats3 = imstat(imagename=name+'/raw_image.im',
+                  region =name+'/spec_region3.crtf')
+  ann1_temp_norm = (temp_ann1/float(stats2['npts']))*float(stats1['npts'])
+  ann2_temp_norm = (temp_ann2/float(stats3['npts']))*float(stats1['npts'])          
+  return temp_in,temp_ann1,temp_ann2,stats1,stats2,stats3,ann1_temp_norm,ann2_temp_norm
 
 def get_vel(name,temp_in):
   ia.open(name+'/raw_image.im')
@@ -54,8 +65,8 @@ def unit_conversion(temp):
   flux_BA = flux_jy/8.64
   return flux_BA
 
-def save_npy(name,velo,flux_inner,bg_flux_inner):
-  output = np.stack((velo,flux_inner,bg_flux_inner),axis=0)
+def save_npy(name,velo,flux_inner,ann1_flux_norm,ann2_flux_norm):
+  output = np.stack((velo,flux_inner,ann1_flux_norm,ann2_flux_norm),axis=0)
   np.save(name+'/spectrum.npy',output)
 
 
@@ -72,14 +83,16 @@ with open('/users/jburke/ebhis_scripts/workflow_results/MW_overlap.csv','r') as 
       radvel = row[4]
       mag21 = row[5]
       w50 = row[6]
-
       make_regions(name,ra,dec)
-      temp_in,temp_ann,stats1,stats2,bg_temp_inner=extract_fluxes(name)
+      temp_in,temp_ann1,temp_ann2,stats1,stats2,stats3,ann1_temp_norm,ann2_temp_norm=extract_fluxes(name)
       vel = get_vel(name,temp_in)
       flux_in =unit_conversion(temp_in)
-      flux_ann=unit_conversion(temp_ann)
-      bg_flux_inner=unit_conversion(bg_temp_inner)
-      save_npy(name,vel,flux_in,bg_flux_inner)
+      flux_ann1=unit_conversion(temp_ann1)
+      flux_ann2=unit_conversion(temp_ann2)
+      ann1_flux_norm=unit_conversion(ann1_temp_norm)
+      ann2_flux_norm=unit_conversion(ann2_temp_norm)
+      save_npy(name,vel,flux_in,ann1_flux_norm,ann2_flux_norm)
+      print(name,'spectrum saved')
 
       
 
