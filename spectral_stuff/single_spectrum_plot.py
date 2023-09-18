@@ -24,8 +24,9 @@ with open('/users/jburke/Desktop/full_gal_list.csv','r') as f:
 """
 fig1,ax1 = plt.subplots()
 #ax1.plot(array[0],array[1]-array[2])
-ax1.plot(array[0],array[1]-array[2],label='gal')
-ax1.plot(array[0],array[2],label='ann1')
+ax1.plot(array[0],array[1],label='gal')
+ax1.plot(array[0],array[2],label='bg')
+ax1.plot(array[0],array[1]-array[2],label='gal-bg')
 #ax1.plot(array[0],array[3],label='ann2')
 #ax1.axvline(radvel, color='red', linestyle='--',label='Rad vel')
 #if w50!= 0:
