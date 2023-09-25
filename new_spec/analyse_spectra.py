@@ -6,6 +6,7 @@ import csv
 import os
 import scipy as sp
 from scipy import integrate
+from lmfit.models import PolynomialModel
 
 def import_spectrum(name):
     file = name+'/spectrum.npy'
@@ -15,10 +16,42 @@ def import_spectrum(name):
     bg_flux = array[2]
     return vel, inner_flux,bg_flux
 
+
+def coarseBackgroundModel(x,y):
+    """
+    fits polynomial to data
+    """
+    #fig1,ax1= plt.subplots()
+    #ax1.plot(x,y,label='gal')
+    #ax1.legend()
+    #plt.show(block=False)
+    low_vel = float(input('baseline low velocity: '))
+    high_vel =float(input('baseline high velocity: '))
+    # set up polynomial model
+    poly_mod = PolynomialModel(1, prefix='p1_')
+    mask = (vel < low_vel) | (vel > high_vel)  # Create a boolean mask
+    filtered_vel = vel[mask]
+    filtered_flux = flux_cleaned[mask]
+    # let lmfit guess the parameter values:
+    p_bg = poly_mod.guess(filtered_flux, x=filtered_vel)
+    # set up our background model (only polynomial here):
+    mod_bg = poly_mod
+    # initialize the model with the guessed parameters:
+    init_bg = mod_bg.eval(p_bg, x=filtered_vel)
+    # fit the model:
+    out_bg = mod_bg.fit(filtered_flux, p_bg, x=filtered_vel)
+    return p_bg, out_bg, mod_bg
+
+def baseline(vel,flux_cleaned):
+    p_bg, out_bg, mod_bg = coarseBackgroundModel(vel,flux_cleaned)
+    baseline= mod_bg.eval(p_bg,x=vel)
+    baselined_flux = flux_cleaned-baseline
+    return baselined_flux
+
 def integrate_spectrum(vel,flux_cleaned):
     #extract values to integrate
-    low_lim = input('Low velocity:')
-    high_lim = input('high velocity:')
+    low_lim = input('integrate low velocity:')
+    high_lim = input('integrate high velocity:')
     x_vals=[]
     y_vals=[]
     low = float(low_lim)
@@ -93,14 +126,15 @@ with open('/users/jburke/ebhis_scripts/workflow_results/MW_overlap.csv','r') as 
                 csv_writer.writerow(new_row)
 
         elif note== '2':
-            tot_flux, uncert = integrate_spectrum(vel,flux_cleaned)
+            baselined_flux = baseline(vel,flux_cleaned)
+            tot_flux, uncert = integrate_spectrum(vel,baselined_flux)
             new_row = row +[str(tot_flux),str(uncert),note]
             with open(csvpath,'a') as f:
                 csv_writer = csv.writer(f)
                 csv_writer.writerow(new_row)
         elif note=='3':
-            tot_flux, uncert = integrate_spectrum(vel,flux_cleaned)
-            new_row = row +[str(tot_flux),str(uncert),note]
+            baselined_flux = baseline(vel,flux_cleaned)
+            tot_flux, uncert = integrate_spectrum(vel,baselined_flux)
             with open(csvpath,'a') as f:
                 csv_writer = csv.writer(f)
                 csv_writer.writerow(new_row)
