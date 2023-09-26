@@ -8,31 +8,119 @@ import matplotlib.pyplot as plt
 
 
 def make_regions(name,ra,dec):
-  file1 = name+ '/spec_region1.crtf'
-  with open(file1,'w') as file:
-    lines = ['#CRTFv0 CASA Region Text Format version 0 \n','ellipse [[',ra,'deg,',dec,'deg], [2500arcsec, 2500arcsec], 0.00000000deg]']
-    file.write(''.join(lines))
-  file2 = name+ '/spec_region2.crtf'
-  with open(file2,'w') as file:
-    lines = ['#CRTFv0 CASA Region Text Format version 0 \n','annulus [[',ra,'deg,',dec,'deg], [3500arcsec, 4000arcsec]]']
-    file.write(''.join(lines))
+    #makes central region for ON spectrum and four OFF spectra
+    file1 = name +'/center_ON_spectrum.crtf'
+    with open(file1,'w') as file:
+        lines = ['#CRTFv0 CASA Region Text Format version 0 \n','ellipse [[',ra,'deg,',dec,'deg], [3000arcsec, 3000arcsec], 0.00000000deg]']
+        file.write(''.join(lines))
+    
+    file2 = name+'/OFF_tr_spectrum.crtf'
+    tr_ra = str(float(ra)+1)
+    tr_dec = str(float(dec)+1)
+    with open(file2,'w') as file:
+        lines = ['#CRTFv0 CASA Region Text Format version 0 \n','ellipse [[',tr_ra,'deg,',tr_dec,'deg], [1000arcsec, 1000arcsec], 0.00000000deg]']
+        file.write(''.join(lines))
 
-def extract_fluxes(name):
-  ia.open(name+'/raw_image.im')
-  flux = ia.getregion(name+'/spec_region1.crtf')
-  ia.close()
-  temp_in =np.sum(np.sum(flux,axis=0),axis=0) #collapse into 1D array
-  ia.open(name+'/raw_image.im')
-  flux = ia.getregion(name+'/spec_region2.crtf')
-  ia.close()
-  temp_ann =np.sum(np.sum(flux,axis=0),axis=0) #collapse into 1D array    
-  #print(sumspec2)
-  stats1 = imstat(imagename=name+'/raw_image.im',
-                  region =name+'/spec_region1.crtf')
-  stats2 = imstat(imagename=name+'/raw_image.im',
-                  region =name+'/spec_region2.crtf')
-  bg_temp_inner = (temp_ann/float(stats2['npts']))*float(stats1['npts'])          
-  return temp_in,temp_ann,stats1,stats2,bg_temp_inner
+    file3 = name+'/OFF_tl_spectrum.crtf'
+    tl_ra = str(float(ra)-1)
+    tl_dec = str(float(dec)+1)
+    with open(file3,'w') as file:
+        lines = ['#CRTFv0 CASA Region Text Format version 0 \n','ellipse [[',tl_ra,'deg,',tl_dec,'deg], [1000arcsec, 1000arcsec], 0.00000000deg]']
+        file.write(''.join(lines))
+
+    file4 = name+'/OFF_bl_spectrum.crtf'
+    bl_ra = str(float(ra)-1)
+    bl_dec = str(float(dec)-1)
+    with open(file4,'w') as file:
+        lines = ['#CRTFv0 CASA Region Text Format version 0 \n','ellipse [[',bl_ra,'deg,',bl_dec,'deg], [1000arcsec, 1000arcsec], 0.00000000deg]']
+        file.write(''.join(lines))
+    
+    file5 = name+'/OFF_br_spectrum.crtf'
+    br_ra = str(float(ra)+1)
+    br_dec = str(float(dec)-1)
+    with open(file5,'w') as file:
+        lines = ['#CRTFv0 CASA Region Text Format version 0 \n','ellipse [[',br_ra,'deg,',br_dec,'deg], [1000arcsec, 1000arcsec], 0.00000000deg]']
+        file.write(''.join(lines))
+
+def dist_direct(name1,name2,ra1,dec1,ra2,dec2):
+    #1=target 2= other source nearby
+    dist=np.sqrt( (float(ra2)-float(ra1))**2 + (float(dec2)-float(dec1))**2) #calculates distance in degrees
+    if dist <= 1.3:
+        print(name2, ' is close to ',name1)
+        x_sign = float(ra2)-float(ra1)
+        y_sign = float(dec2)-float(dec1)
+        if x_sign>0 and y_sign>0:
+            exclude='tr'
+        if x_sign<0 and y_sign>0:
+            exclude='tl'
+        if x_sign>0 and y_sign<0:
+            exclude='bl'
+        if x_sign<0 and y_sign<0:
+            exclude='br'
+        print(exclude)
+    else:
+        exclude ='n/a'
+    return dist, exclude
+
+def extract_spectra(name,exclude):
+    ia.open(name+'/raw_image.im')#ON spectrum
+    flux = ia.getregion(name+'/center_ON_spectrum.crtf')
+    ia.close()
+    temp_ON =np.sum(np.sum(flux,axis=0),axis=0)
+    ia.open(name+'/raw_image.im')#OFF spectra
+    flux = ia.getregion(name+'/OFF_tr_spectrum.crtf')
+    ia.close()
+    temp_OFF_tr =np.sum(np.sum(flux,axis=0),axis=0)    
+    ia.open(name+'/raw_image.im')
+    flux = ia.getregion(name+'/OFF_tl_spectrum.crtf')
+    ia.close()
+    temp_OFF_tl =np.sum(np.sum(flux,axis=0),axis=0)
+    ia.open(name+'/raw_image.im')
+    flux = ia.getregion(name+'/OFF_bl_spectrum.crtf')
+    ia.close()
+    temp_OFF_bl =np.sum(np.sum(flux,axis=0),axis=0)
+    ia.open(name+'/raw_image.im')
+    flux = ia.getregion(name+'/OFF_br_spectrum.crtf')
+    ia.close()
+    temp_OFF_br =np.sum(np.sum(flux,axis=0),axis=0)
+
+
+
+    statsON = imstat(imagename=name+'/raw_image.im',
+                    region =name+'/center_ON_spectrum.crtf')
+    statsOFFtr = imstat(imagename=name+'/raw_image.im',
+                    region =name+'/OFF_tr_spectrum.crtf')
+    statsOFFtl = imstat(imagename=name+'/raw_image.im',
+                    region =name+'/OFF_tl_spectrum.crtf')
+    statsOFFbl = imstat(imagename=name+'/raw_image.im',
+                    region =name+'/OFF_bl_spectrum.crtf')
+    statsOFFbr = imstat(imagename=name+'/raw_image.im',
+                    region =name+'/OFF_br_spectrum.crtf')
+    
+    if exclude=='tr':
+        bg_temp = temp_OFF_tl+temp_OFF_bl+temp_OFF_br
+        bg_npix = float(statsOFFbl['npts'])+float(statsOFFtl['npts'])+float(statsOFFbr['npts'])
+    if exclude=='tl':
+        bg_temp = temp_OFF_tr+temp_OFF_bl+temp_OFF_br
+        bg_npix = float(statsOFFbl['npts'])+float(statsOFFtr['npts'])+float(statsOFFbr['npts'])
+    if exclude=='bl':
+        bg_temp = temp_OFF_tl+temp_OFF_tr+temp_OFF_br
+        bg_npix = float(statsOFFtr['npts'])+float(statsOFFtl['npts'])+float(statsOFFbr['npts'])
+    if exclude=='br':
+        bg_temp = temp_OFF_tl+temp_OFF_tr+temp_OFF_bl
+        bg_npix = float(statsOFFtr['npts'])+float(statsOFFtl['npts'])+float(statsOFFbl['npts'])
+    else:
+        bg_temp = temp_OFF_tl+temp_OFF_tr+temp_OFF_bl+temp_OFF_br
+        #print(float(statsOFFtr['npts']))
+        #print(float(statsOFFbr['npts']))
+        #print(float(statsOFFtl['npts']))
+        #print(float(statsOFFbl['npts']))
+        bg_npix = float(statsOFFtr['npts'])+float(statsOFFtl['npts'])+float(statsOFFbl['npts'])+float(statsOFFbr['npts'])
+    
+    temp_OFF_norm= (bg_temp/bg_npix)*float(statsON['npts']) #background temp scales to same pixels as ON spectrum
+
+    return temp_ON, temp_OFF_norm
+
 
 def get_vel(name,temp_in):
   ia.open(name+'/raw_image.im')
@@ -58,22 +146,47 @@ def save_npy(name,velo,flux_inner,bg_flux_inner):
   output = np.stack((velo,flux_inner,bg_flux_inner),axis=0)
   np.save(name+'/spectrum.npy',output)
 
-with open('/users/jburke/ebhis_scripts/workflow_results/final_results.csv','r') as f:
-   reader = csv.reader(f)
-   header = next(reader)
-   for row in reader:
-      name = row[0]
-      ra = row[1]
-      dec = row[2]
-      dist = row[3]
-      radvel = row[4]
-      mag21 = row[5]
-      w50 = row[6]
+def add_to_csv(row,csv_path):
+   with open(csv_path,'a') as file:
+    csv_writer = csv.writer(file)
+    csv_writer.writerow(row)
 
-      make_regions(name,ra,dec)
-      temp_in,temp_ann,stats1,stats2,bg_temp_inner=extract_fluxes(name)
-      vel = get_vel(name,temp_in)
-      flux_in =unit_conversion(temp_in)
-      flux_ann=unit_conversion(temp_ann)
-      bg_flux_inner=unit_conversion(bg_temp_inner)
-      save_npy(name,vel,flux_in,bg_flux_inner)
+   
+
+with open('/users/jburke/ebhis_scripts/workflow_results/final_results.csv','r') as f:
+  reader = csv.reader(f)
+  header = next(reader)
+  for row in reader:
+    name = row[0]
+    ra = row[1]
+    dec = row[2]
+    dist = row[3]
+    radvel = row[4]
+    mag21 = row[5]
+    w50 = row[6]
+    print('-----',name,'------')
+    make_regions(name,ra,dec)
+
+    run=0
+    with open('/users/jburke/Desktop/full_gal_list.csv','r') as file:
+      reader1 = csv.reader(file)
+      header1 = next(reader1)
+      for row1 in reader1:
+         if name == row1[0]:
+            pass#ignore if same galaxy
+         else:
+            dist,exclude = dist_direct(name,row1[0],ra,row1[1],dec,row1[2])
+            if exclude!= 'n/a' or name=='SexA':
+              run +=1
+              print(name,' overlaps with ', row1[0])
+              add_to_csv(row,'/users/jburke/ebhis_scripts/w50_stuff/overlap_spectra.csv')
+            else:
+              pass
+    if run ==0:
+      temp_ON, temp_OFF_norm = extract_spectra(name,exclude)
+      vel = get_vel(name,temp_ON)
+      flux_ON = unit_conversion(temp_ON)
+      flux_OFF= unit_conversion(temp_OFF_norm)
+      save_npy(name,vel,flux_ON,flux_OFF)
+      add_to_csv(row,'/users/jburke/ebhis_scripts/w50_stuff/ready_to_analyse.csv')
+      print(name,' spectrum saved.')
