@@ -88,7 +88,20 @@ def get_w50(name):
     ax2.legend()
     ax2.set_title(name)
     ax2.hlines(hm,peak_vels[l_index],peak_vels[r_index])
-    plt.show(fig2,block=False)
+    plt.show(block=False)
+    return fwhm,rad_vel,step_size
+
+def save_csv(row,fwhm,rad_vel,fwhm_uncert,rv_uncert):
+    adds = ['-','-','-']
+    new_row = row +adds
+    new_row[9] =str(rad_vel)
+    new_row[10]=str(rv_uncert)
+    new_row[11]=str(fwhm)
+    new_row[12]=str(fwhm_uncert)
+    with open('/users/jburke/ebhis_scripts/w50_stuff/rv_w50_vals.csv','a') as f:
+        writer = csv.writer(f)
+        writer.writerow(new_row)
+
 
 
 with open('/users/jburke/ebhis_scripts/w50_stuff/ready_to_analyse.csv','r') as f:
@@ -107,8 +120,12 @@ with open('/users/jburke/ebhis_scripts/w50_stuff/ready_to_analyse.csv','r') as f
         single_spectrum_plot(name,arrays[plot],rad_vel_init)
         vis = input('Get vals? y/n ')
         if vis == 'y':
-            get_w50(name)
-            save_vals = input('Save? ')
+            fwhm,rad_vel,step_size=get_w50(name)
+            save_vals = input('Save? y/n ')
+            if save_vals =='y':
+                save_csv(row,fwhm,rad_vel,step_size,step_size*2)
+        elif vis =='n':
+            save_csv(row,'-','-','-','-')
         plt.close()
 
         
