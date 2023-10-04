@@ -2,10 +2,26 @@ import numpy as np
 import os
 import csv
 import copy
-import matplotlib
-matplotlib.use('TkAgg')
-import matplotlib.pyplot as plt
+#import matplotlib
+#matplotlib.use('TkAgg')
+#import matplotlib.pyplot as plt
 
+def make_hanning(name):
+    print('starting hanning smoothing')
+    os.system('rm -rf '+name+'/*hanning*')
+    ia.open(name+'/raw_image.im') # open the file
+    ia.hanning(name+'/hanning_smoothed1.im')# submit outfile and set (drop pixels) to false
+    ia.close()
+    ia.open(name+'/hanning_smoothed1.im') # open the file
+    ia.hanning(name+'/hanning_smoothed2.im')# submit outfile and set (drop pixels) to false
+    ia.close()
+    ia.open(name+'/hanning_smoothed2.im') # open the file
+    ia.hanning(name+'/hanning_smoothed3.im')# submit outfile and set (drop pixels) to false
+    ia.close()
+    ia.open(name+'/hanning_smoothed3.im') # open the file
+    ia.hanning(name+'/hanning_smoothed4.im')# submit outfile and set (drop pixels) to false
+    ia.close()
+    print('Hanning smoothing complete')
 
 def make_regions(name,ra,dec):
     #makes central region for ON spectrum and four OFF spectra
@@ -62,39 +78,39 @@ def dist_direct(name1,name2,ra1,dec1,ra2,dec2):
         exclude ='n/a'
     return dist, exclude
 
-def extract_spectra(name,exclude):
-    ia.open(name+'/raw_image.im')#ON spectrum
+def extract_spectra(name,exclude,image):
+    ia.open(name+image)#ON spectrum
     flux = ia.getregion(name+'/center_ON_spectrum.crtf')
     ia.close()
     temp_ON =np.sum(np.sum(flux,axis=0),axis=0)
-    ia.open(name+'/raw_image.im')#OFF spectra
+    ia.open(name+image)#OFF spectra
     flux = ia.getregion(name+'/OFF_tr_spectrum.crtf')
     ia.close()
     temp_OFF_tr =np.sum(np.sum(flux,axis=0),axis=0)    
-    ia.open(name+'/raw_image.im')
+    ia.open(name+image)
     flux = ia.getregion(name+'/OFF_tl_spectrum.crtf')
     ia.close()
     temp_OFF_tl =np.sum(np.sum(flux,axis=0),axis=0)
-    ia.open(name+'/raw_image.im')
+    ia.open(name+image)
     flux = ia.getregion(name+'/OFF_bl_spectrum.crtf')
     ia.close()
     temp_OFF_bl =np.sum(np.sum(flux,axis=0),axis=0)
-    ia.open(name+'/raw_image.im')
+    ia.open(name+image)
     flux = ia.getregion(name+'/OFF_br_spectrum.crtf')
     ia.close()
     temp_OFF_br =np.sum(np.sum(flux,axis=0),axis=0)
 
 
 
-    statsON = imstat(imagename=name+'/raw_image.im',
+    statsON = imstat(imagename=name+image,
                     region =name+'/center_ON_spectrum.crtf')
-    statsOFFtr = imstat(imagename=name+'/raw_image.im',
+    statsOFFtr = imstat(imagename=name+image,
                     region =name+'/OFF_tr_spectrum.crtf')
-    statsOFFtl = imstat(imagename=name+'/raw_image.im',
+    statsOFFtl = imstat(imagename=name+image,
                     region =name+'/OFF_tl_spectrum.crtf')
-    statsOFFbl = imstat(imagename=name+'/raw_image.im',
+    statsOFFbl = imstat(imagename=name+image,
                     region =name+'/OFF_bl_spectrum.crtf')
-    statsOFFbr = imstat(imagename=name+'/raw_image.im',
+    statsOFFbr = imstat(imagename=name+image,
                     region =name+'/OFF_br_spectrum.crtf')
     
     if exclude=='tr':
@@ -121,9 +137,23 @@ def extract_spectra(name,exclude):
 
     return temp_ON, temp_OFF_norm
 
+def get_hanning_spectra(name):
+    print('getting Hanning spectra')
+    nums = ['1','2','3','4']
+    for i in nums:
+        temp_ON, temp_OFF_norm = extract_spectra(name,exclude,'/hanning_smoothed'+i+'.im')
+        image = '/hanning_smoothed'+i+'.im'
+        vel = get_vel(name,temp_ON,image)
+        flux_ON = unit_conversion(temp_ON)
+        flux_OFF= unit_conversion(temp_OFF_norm)
+        save_npy(name,vel,flux_ON,flux_OFF)
+        output = np.stack((vel,flux_ON,flux_OFF),axis=0)
+        np.save(name+'/hanning_spectrum'+i+'.npy',output)
+    print('Hanning spectra saved')
 
-def get_vel(name,temp_in):
-  ia.open(name+'/raw_image.im')
+
+def get_vel(name,temp_in,image):
+  ia.open(name+image)
   csys=ia.coordsys()
   x=np.array(np.arange(0,len(temp_in),1.)) #need floating point array
   freqs = copy.deepcopy(x)
@@ -166,7 +196,7 @@ with open('/users/jburke/ebhis_scripts/workflow_results/final_results.csv','r') 
     w50 = row[6]
     print('-----',name,'------')
     make_regions(name,ra,dec)
-
+    make_hanning(name)
     run=0
     with open('/users/jburke/Desktop/full_gal_list.csv','r') as file:
       reader1 = csv.reader(file)
@@ -183,8 +213,9 @@ with open('/users/jburke/ebhis_scripts/workflow_results/final_results.csv','r') 
             else:
               pass
     if run ==0:
-      temp_ON, temp_OFF_norm = extract_spectra(name,exclude)
-      vel = get_vel(name,temp_ON)
+      get_hanning_spectra(name)
+      temp_ON, temp_OFF_norm = extract_spectra(name,exclude,'/raw_image.im')
+      vel = get_vel(name,temp_ON,'/raw_image.im')
       flux_ON = unit_conversion(temp_ON)
       flux_OFF= unit_conversion(temp_OFF_norm)
       save_npy(name,vel,flux_ON,flux_OFF)
