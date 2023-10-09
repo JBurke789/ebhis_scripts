@@ -56,7 +56,7 @@ def get_w50(name):
     mask = (arrays[plot][0]>=low_x) & (arrays[plot][0]<=high_x)
     peak_vels = arrays[plot][0][mask]
     peak_flux = arrays[plot][1][mask]-arrays[plot][2][mask]
-    plt.close
+    plt.close()
     fig1,ax1 = plt.subplots()
     ax1.plot(peak_vels,peak_flux,label='galaxy')
     ax1.set_xlabel('Velocity [km/s]')
@@ -89,13 +89,21 @@ def get_w50(name):
     ax1.legend()
     ax1.set_title(name)
     ax1.hlines(hm,peak_vels[l_index],peak_vels[r_index])
-    plt.show()
+    plt.show(block=False)
+    return fwhm,rad_vel,step_size
 
 
 
+gal_results=[]
+with open('/users/jburke/ebhis_scripts/w50_stuff/rv_w50_vals.csv','r') as f:
+    reader = csv.reader(f)
+    header = next(reader)
+    for row in reader:
+        gal_results.append(row)
 
 
-name = 'IC1613'
+name = input('Galaxy name: ')
+
 
 
 
@@ -111,4 +119,40 @@ with open('/users/jburke/ebhis_scripts/w50_stuff/ready_to_analyse.csv','r') as f
             plt.close()
             arrays = [nf,h1,h2,h3,h4]
             single_spectrum_plot(name,arrays[plot],rad_vel_init)
-            get_w50(name)
+            fwhm,rad_vel,step_size=get_w50(name)
+
+save = input('Save results? y/n: ')
+if save == 'y':
+    with open('/users/jburke/ebhis_scripts/workflow_results/final_results.csv','r') as f:#get initial row vals from full list
+        reader = csv.reader(f)
+        header = next(reader)
+        for row in reader:
+            if row[0]==name:
+                init_row = row
+    #run through gals already analysed and replace values
+    gals_analysed=[]
+    for i in gal_results:#replaces values if galaxy already analysed
+        gals_analysed.append(i[0])
+        if i[0]==name:
+            i[9]=str(rad_vel)
+            i[10]=str(step_size)
+            i[11]=str(fwhm)
+            i[12]=str(step_size*2)
+    #append gal vals if not already analysed
+    if name not in gals_analysed:
+        adds = ['-','-','-']
+        new_row = init_row +adds
+        new_row[9] =str(rad_vel)
+        new_row[10]=str(step_size)
+        new_row[11]=str(fwhm)
+        new_row[12]=str(step_size*2)
+        new_add = [str(rad_vel),str(step_size),str(fwhm),str(step_size*2)]
+        new_row = init_row+new_add
+        gal_results.append(new_row)
+    
+    with open('/users/jburke/ebhis_scripts/w50_stuff/rv_w50_vals.csv','w') as f:
+        csv_writer = csv.writer(f)
+        header=['name','ra','dec','distance','radial_velocity','h1_21_cm_mag','h1_21_cm_50pc_width','flux [Jy km/s BA^-1]','uncert','RV [km/s]','uncert','w50 [km/s]','uncert']
+        csv_writer.writerow(header)
+        csv_writer.writerows(gal_results)
+
