@@ -19,9 +19,7 @@ def get_spectra():
 
 def plot_all_spectra(nf,h1,h2,h3,h4,rv):
     fig1,ax1 = plt.subplots()
-    #y_hanning = cleaned_gal*np.hanning(len(vel))
     ax1.plot(nf[0],nf[1],label='no filter')
-    #ax1.plot(h4[0],h4[2],label='bg')
     ax1.plot(h1[0],h1[1],label='hanning 1')
     ax1.plot(h2[0],h2[1],label='hanning 2')
     ax1.plot(h3[0],h3[1],label='hanning 3')
@@ -29,25 +27,25 @@ def plot_all_spectra(nf,h1,h2,h3,h4,rv):
     ax1.vlines(float(rv),-20,20,'r')
     ax1.set_xlabel('Velocity [km/s]')
     ax1.set_ylabel('flux [Jy/BA]')
-    ax1.set_ylim(-10,40)
-    #ax1.set_xlim(float(rv)-200,float(rv)+200)
+    ax1.set_ylim(-5,10)
+    ax1.set_xlim(float(rv)-200,float(rv)+200)
     ax1.legend()
     plt.show(block=False)
 
-def single_spectrum_plot(array):
+def single_spectrum_plot(array,rv):
     fig1,ax1 = plt.subplots()
     ax1.plot(array[0],array[1],label='galaxy')
     #ax1.plot(array[0],array[2],label='background')
-    #ax1.vlines(float(rv),-20,20,'r')
+    ax1.vlines(float(rv),-20,20,'r')
     ax1.set_xlabel('Velocity [km/s]')
     ax1.set_ylabel('flux [Jy/BA]')
-    ax1.set_ylim(-10,40)
+    ax1.set_ylim(-5,10)
     #ax1.set_xlim(float(rv)-200,float(rv)+200)
     ax1.legend()
     #ax1.set_title(name)
     plt.show(block=False)
 
-def get_w50():
+def get_w50(rv):
     low_x = float(input('low vel val: '))
     high_x = float(input('high vel val: '))
     mask = (arrays[level][0]>=low_x) & (arrays[level][0]<=high_x)
@@ -70,13 +68,14 @@ def get_w50():
     print('FWHM: ',fwhm,' +/- ', step_size,' km/s')
     print('RV: ',rad_vel, ' +/- ', step_size*2,' km/s')
     
-
-
     fig2,ax2 = plt.subplots()
     ax2.plot(peak_vels,peak_flux,label='galaxy')
     ax2.set_xlabel('Velocity [km/s]')
     ax2.set_ylabel('flux [Jy/BA]')
     ax2.legend()
+    ax2.vlines(float(rv),-5,20,'r')
+    ax2.vlines(float(rad_vel),-5,20,'g')
+    ax2.set_ylim(-5,10)
     #ax2.set_title(name)
     ax2.hlines(hm,peak_vels[l_index],peak_vels[r_index],'r')
     plt.show(block=False)
@@ -113,7 +112,7 @@ def save_csv(name,rv,uncert1,fwhm,uncert2):
 
 
 
-gal_name = 'NGC4244'
+gal_name = input('Galaxy name: ')
 
 with open('/users/jburke/ebhis_scripts/w50_stuff/ready_to_analyse.csv','r') as f:
     reader = csv.reader(f)
@@ -127,9 +126,9 @@ nf,h1,h2,h3,h4= get_spectra()
 plot_all_spectra(nf,h1,h2,h3,h4,rad_vel_init)
 level = int(input('hanning filter level: '))
 arrays = [nf,h1,h2,h3,h4]
-single_spectrum_plot(arrays[level])
+single_spectrum_plot(arrays[level],rad_vel_init)
 
-fwhm,rad_vel,step_size = get_w50()
+fwhm,rad_vel,step_size = get_w50(rad_vel_init)
 save = input('Save? y/n ')
 if save =='y':
     save_csv(gal_name,rad_vel,step_size*2,fwhm,step_size)

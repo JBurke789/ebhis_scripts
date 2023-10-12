@@ -93,13 +93,33 @@ def get_w50(name):
     return fwhm,rad_vel,step_size
 
 
+def save_csv(name,rv,uncert1,fwhm,uncert2):
+    gal_results=[]
+    with open('/users/jburke/ebhis_scripts/w50_stuff/new_vals.csv','r') as f:
+        reader = csv.reader(f)
+        header = next(reader)
+        for row in reader:
+            gal_results.append(row)
 
-gal_results=[]
-with open('/users/jburke/ebhis_scripts/w50_stuff/rv_w50_vals.csv','r') as f:
-    reader = csv.reader(f)
-    header = next(reader)
-    for row in reader:
-        gal_results.append(row)
+
+    gals_analysed=[]
+    for i in gal_results:
+        gals_analysed.append(i[0])
+        if i[0]==name:
+            i[1]=str(rv)
+            i[2]=str(uncert1)
+            i[3]=str(fwhm)
+            i[4]=str(uncert2)
+    #append gal vals if not already analysed
+    if name not in gals_analysed:
+        new_row = [name,str(rv),str(uncert1),str(fwhm),str(uncert2)]
+        gal_results.append(new_row)
+
+    with open('/users/jburke/ebhis_scripts/w50_stuff/new_vals.csv','w') as f:
+        writer=csv.writer(f)
+        header = ['name','rv','+/-','w50','+/-']
+        writer.writerow(header)
+        writer.writerows(gal_results)
 
 
 name = input('Galaxy name: ')
@@ -121,38 +141,27 @@ with open('/users/jburke/ebhis_scripts/w50_stuff/ready_to_analyse.csv','r') as f
             single_spectrum_plot(name,arrays[plot],rad_vel_init)
             fwhm,rad_vel,step_size=get_w50(name)
 
-save = input('Save results? y/n: ')
-if save == 'y':
-    with open('/users/jburke/ebhis_scripts/workflow_results/final_results.csv','r') as f:#get initial row vals from full list
-        reader = csv.reader(f)
-        header = next(reader)
-        for row in reader:
-            if row[0]==name:
-                init_row = row
-    #run through gals already analysed and replace values
-    gals_analysed=[]
-    for i in gal_results:#replaces values if galaxy already analysed
-        gals_analysed.append(i[0])
-        if i[0]==name:
-            i[9]=str(rad_vel)
-            i[10]=str(step_size)
-            i[11]=str(fwhm)
-            i[12]=str(step_size*2)
-    #append gal vals if not already analysed
-    if name not in gals_analysed:
-        adds = ['-','-','-']
-        new_row = init_row +adds
-        new_row[9] =str(rad_vel)
-        new_row[10]=str(step_size)
-        new_row[11]=str(fwhm)
-        new_row[12]=str(step_size*2)
-        new_add = [str(rad_vel),str(step_size),str(fwhm),str(step_size*2)]
-        new_row = init_row+new_add
-        gal_results.append(new_row)
-    
-    with open('/users/jburke/ebhis_scripts/w50_stuff/rv_w50_vals.csv','w') as f:
-        csv_writer = csv.writer(f)
-        header=['name','ra','dec','distance','radial_velocity','h1_21_cm_mag','h1_21_cm_50pc_width','flux [Jy km/s BA^-1]','uncert','RV [km/s]','uncert','w50 [km/s]','uncert']
-        csv_writer.writerow(header)
-        csv_writer.writerows(gal_results)
+with open('/users/jburke/ebhis_scripts/w50_stuff/ready_to_analyse.csv','r') as f:
+    reader = csv.reader(f)
+    header = next(reader)
+    for row in reader:
+        name = row[0]
+        rad_vel_init = row[4]
+        print('-----',name,'-----')
+
+        nf,h1,h2,h3,h4 = get_spectra(name)
+        plot_spectrum(name,nf,h1,h2,h3,h4,rad_vel_init)  
+        plot = int(input('which level to run analysis? (0 for no hanning) '))
+        plt.close()
+        arrays = [nf,h1,h2,h3,h4]
+        single_spectrum_plot(name,arrays[plot],rad_vel_init)
+        vis = input('Get vals? y/n ')
+        if vis == 'y':
+            fwhm,rad_vel,step_size=get_w50(name)
+            save_vals = input('Save? y/n ')
+            if save_vals =='y':
+                save_csv(name,fwhm,rad_vel,step_size,step_size*2)
+        elif vis =='n':
+            save_csv(name,'-','-','-','-')
+        plt.close()
 
