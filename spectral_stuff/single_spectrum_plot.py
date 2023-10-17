@@ -7,7 +7,7 @@ import csv
 
 #name = input('galaxy name: ')
 
-array = np.load('spectrum.npy')
+array = np.load('NGC4449/spectrum.npy')
 """
 with open('/users/jburke/Desktop/full_gal_list.csv','r') as f:
    reader = csv.reader(f)
@@ -24,9 +24,9 @@ with open('/users/jburke/Desktop/full_gal_list.csv','r') as f:
 """
 fig1,ax1 = plt.subplots()
 #ax1.plot(array[0],array[1]-array[2])
+#ax1.plot(array[0],array[1],label='gal')
+#ax1.plot(array[0],array[2],label='bg')
 ax1.plot(array[0],array[1],label='gal')
-ax1.plot(array[0],array[2],label='bg')
-ax1.plot(array[0],array[1]-array[2],label='gal-bg')
 #ax1.plot(array[0],array[3],label='ann2')
 #ax1.axvline(radvel, color='red', linestyle='--',label='Rad vel')
 #if w50!= 0:
