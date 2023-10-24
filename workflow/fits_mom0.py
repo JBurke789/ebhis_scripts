@@ -5,13 +5,14 @@ matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import astropy.io.fits as fits
 from matplotlib.colors import LogNorm
-from matplotlib.ticker import LogLocator
 import astropy.visualization
-from matplotlib.colors import LogNorm
 from astropy.wcs import WCS
+import math
+from matplotlib.ticker import ScalarFormatter
 
-'''makes python plots of fits moment 0 maps'''
+
 def crop_array(array):
+    #crops to center of image 
     orig_shape = array.shape
     new_shape = (orig_shape[0]//3,orig_shape[1]//3)
     start_indices = ((orig_shape[0]-new_shape[0]) // 2, (orig_shape[1] - new_shape[1]) // 2)
@@ -21,31 +22,20 @@ def crop_array(array):
 def visualize_image(array,name,wcs):
     rescaled_array = (array+abs(np.min(array))*1.00001)
     fig = plt.figure()
-    ax=plt.subplot(projection=wcs)
-    #ax=plt.subplot()
-    if np.max(rescaled_array)<= 20:
-        tick_loc = [0.2*np.max(rescaled_array),5,8,10,np.max(rescaled_array)]
-        tick_lab = ["{:.1f}".format(0.2*np.max(rescaled_array)),'5','8','10',"{:.1f}".format(np.max(rescaled_array))]
-        
-    elif np.max(rescaled_array)<= 100 and np.max(rescaled_array)>20:
-        tick_loc = [0.2*np.max(rescaled_array),5,10,20,40,80,np.max(rescaled_array)]
-        tick_lab = ["{:.1f}".format(0.2*np.max(rescaled_array)),'5','10','20','40','80',"{:.1f}".format(np.max(rescaled_array))]
-        
-    else:
-        tick_loc=[0.2*np.max(rescaled_array),10,50,100,200,300,500,np.max(rescaled_array)]
-        tick_lab= ["{:.1f}".format(0.2*np.max(rescaled_array)),'10','50','100','200','300','500',"{:.1f}".format(np.max(rescaled_array))]
-    #histogram = plt.hist(rescaled_array.flatten(), bins='auto')    
+    ax=plt.subplot(projection=wcs)  
     plt.imshow(rescaled_array,norm=LogNorm(),vmin = 0.2*np.max(rescaled_array))
-
     ax.set_xlabel('Right Ascension')
     ax.set_ylabel('Declination')
     ax.set_title(name)
-    print(np.max(rescaled_array))
-    cbar=plt.colorbar(ticks=tick_loc)
-    cbar.ax.set_yticklabels(tick_lab)
+    cbar=plt.colorbar()
+    cbar.formatter = ScalarFormatter(useMathText=False)
     cbar.ax.set_ylabel('K km/s')
+    cbar.update_ticks()
     contours = plt.contour(rescaled_array, levels=[0.5*np.max(rescaled_array)], colors='red', linewidths=1)
-    plt.show()
+    fig_name = '/users/jburke/Desktop/results/mom0_maps/'+name+'.png'
+    #plt.show()
+    plt.savefig(fig_name)
+    plt.close()
 
 def read_data(filepath):
     hdul= fits.open(filepath)
@@ -65,7 +55,7 @@ with open('/users/jburke/ebhis_scripts/workflow_results/final_results.csv','r') 
         gal_names.append(row[0])
 
 for name in gal_names:
-    if name =='HIZSS003':
+    if name =='HIZSS003'or name=='SexA':
         pass
     else:
         print(name)
