@@ -20,9 +20,9 @@ def extract_spectra(image):
     temp_OFF =np.sum(np.sum(flux,axis=0),axis=0)
 
     statsON = imstat(imagename=image,
-                    region ='center_ON_spectrum.crtf')
+                    region ='man_spectrum_ON.crtf')
     statsOFF = imstat(imagename=image,
-                    region ='OFF_tr_spectrum.crtf')
+                    region ='man_spectrum_OFF.crtf')
 
     temp_OFF_norm= (temp_OFF/float(statsOFF['npts']))*float(statsON['npts']) #background temp scales to same pixels as ON spectrum
 

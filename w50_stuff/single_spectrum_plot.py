@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-array = np.load('man_hanning_spectrum2.npy')
+array = np.load('man_hanning_spectrum3.npy')
 
 low_x = 100.
 high_x = 400.
@@ -15,15 +15,16 @@ peak_flux = array[1][mask]
 peak_bit = 1.2 * np.max(peak_flux)
 
 
-w50 = 41.2228790119
+w50 = 12.9
 
-rv = 360.801148758
+rv = 418.8
 
 print(peak_bit)
-name ='DDO046'
+name ='CVnHI'
 
 fig1,ax1 = plt.subplots()
-ax1.plot(array[0],array[1],'k',linewidth=0.7)
+ax1.plot(array[0],array[1],'k',linewidth=0.7,drawstyle='steps-mid')
+ax1.hlines(0,np.min(array[0]),np.max(array[0]),linestyle='--',linewidth=0.6,alpha=0.6)
 ax1.set_title(name)
 ax1.set_xlabel('Velocity [km/s]')
 ax1.set_ylabel('Flux per Beam Area [Jy/BA]')

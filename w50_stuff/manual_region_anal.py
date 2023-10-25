@@ -84,7 +84,7 @@ def get_w50(rv):
 
 def save_csv(name,rv,uncert1,fwhm,uncert2):
     gal_results=[]
-    with open('/users/jburke/ebhis_scripts/w50_stuff/new_vals.csv','r') as f:
+    with open('/users/jburke/ebhis_scripts/w50_stuff/fixed_vals.csv','r') as f:
         reader = csv.reader(f)
         header = next(reader)
         for row in reader:
@@ -104,7 +104,7 @@ def save_csv(name,rv,uncert1,fwhm,uncert2):
         new_row = [name,str(rv),str(uncert1),str(fwhm),str(uncert2)]
         gal_results.append(new_row)
 
-    with open('/users/jburke/ebhis_scripts/w50_stuff/new_vals.csv','w') as f:
+    with open('/users/jburke/ebhis_scripts/w50_stuff/fixed_vals.csv','w') as f:
         writer=csv.writer(f)
         header = ['name','rv','+/-','w50','+/-']
         writer.writerow(header)
@@ -113,14 +113,15 @@ def save_csv(name,rv,uncert1,fwhm,uncert2):
 
 
 gal_name = input('Galaxy name: ')
-
+"""
 with open('/users/jburke/ebhis_scripts/w50_stuff/ready_to_analyse.csv','r') as f:
     reader = csv.reader(f)
     header = next(reader)
     for row in reader:
         if row[0]==gal_name:
             rad_vel_init = row[4]
-            
+"""
+rad_vel_init = 533
        
 nf,h1,h2,h3,h4= get_spectra()
 plot_all_spectra(nf,h1,h2,h3,h4,rad_vel_init)

@@ -39,7 +39,8 @@ def make_plot(name,rv,w50,array):
 
     peak_bit = 1.05 * np.max(peak_flux)
     fig1,ax1 = plt.subplots()
-    ax1.plot(array[0],array[1],'k',linewidth=0.7)
+    ax1.plot(array[0],array[1],'k',linewidth=0.7,drawstyle='steps-mid')
+    ax1.hlines(0,np.min(array[0]),np.max(array[0]),linestyle='--',linewidth=0.6,alpha=0.6)
     ax1.set_title(name)
     ax1.set_xlabel('Velocity [km/s]')
     ax1.set_ylabel('Flux per Beam Area [Jy/BA]')

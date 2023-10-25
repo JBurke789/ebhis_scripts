@@ -24,11 +24,8 @@ class galaxy:
         else: 
             in_sum = float(input('Inner sum: '))
             in_npix = float(input('Inner npix: '))
-            #in_rms =  float(input('Inner rms: '))
             out_sum = float(input('Outer sum: ')) 
             out_npix = float(input('Outer npix: '))
-            #out_rms =  float(input('Outer rms: '))
-            #bg_rms = np.sqrt((out_npix/(out_npix-in_npix))*(out_rms**2 - (in_npix/(out_npix))*in_rms**2))
             bg_rms = 0.09# rms=90mK from ebhis calibration
             #calculates flux from values in annuli
             bg_flux = out_sum-in_sum

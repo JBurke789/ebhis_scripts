@@ -127,6 +127,7 @@ name = input('Galaxy name: ')
 
 
 
+"""
 with open('/users/jburke/ebhis_scripts/w50_stuff/ready_to_analyse.csv','r') as f:
     reader = csv.reader(f)
     header = next(reader)
@@ -140,28 +141,18 @@ with open('/users/jburke/ebhis_scripts/w50_stuff/ready_to_analyse.csv','r') as f
             arrays = [nf,h1,h2,h3,h4]
             single_spectrum_plot(name,arrays[plot],rad_vel_init)
             fwhm,rad_vel,step_size=get_w50(name)
+            new_row = [name,rad_vel,step_size*2,fwhm,step_size]
+"""
+rad_vel_init = 533.0
 
-with open('/users/jburke/ebhis_scripts/w50_stuff/ready_to_analyse.csv','r') as f:
-    reader = csv.reader(f)
-    header = next(reader)
-    for row in reader:
-        name = row[0]
-        rad_vel_init = row[4]
-        print('-----',name,'-----')
-
-        nf,h1,h2,h3,h4 = get_spectra(name)
-        plot_spectrum(name,nf,h1,h2,h3,h4,rad_vel_init)  
-        plot = int(input('which level to run analysis? (0 for no hanning) '))
-        plt.close()
-        arrays = [nf,h1,h2,h3,h4]
-        single_spectrum_plot(name,arrays[plot],rad_vel_init)
-        vis = input('Get vals? y/n ')
-        if vis == 'y':
-            fwhm,rad_vel,step_size=get_w50(name)
-            save_vals = input('Save? y/n ')
-            if save_vals =='y':
-                save_csv(name,fwhm,rad_vel,step_size,step_size*2)
-        elif vis =='n':
-            save_csv(name,'-','-','-','-')
-        plt.close()
-
+nf,h1,h2,h3,h4 = get_spectra(name)
+plot_spectrum(name,nf,h1,h2,h3,h4,rad_vel_init)
+plot = int(input('which level to run analysis? (0 for no hanning) '))
+plt.close()
+arrays = [nf,h1,h2,h3,h4]
+single_spectrum_plot(name,arrays[plot],rad_vel_init)
+fwhm,rad_vel,step_size=get_w50(name)
+new_row = [name,rad_vel,step_size*2,fwhm,step_size]
+with open('/users/jburke/ebhis_scripts/w50_stuff/fixed_vals.csv','a') as f:
+    writer=csv.writer(f)
+    writer.writerow(new_row)

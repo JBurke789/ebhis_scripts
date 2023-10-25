@@ -11,13 +11,14 @@ import math
 from matplotlib.ticker import ScalarFormatter
 
 
-def crop_array(array):
+def crop_array(array,wcs):
     #crops to center of image 
     orig_shape = array.shape
     new_shape = (orig_shape[0]//3,orig_shape[1]//3)
     start_indices = ((orig_shape[0]-new_shape[0]) // 2, (orig_shape[1] - new_shape[1]) // 2)
     crop_array = array[start_indices[0]:start_indices[0]+new_shape[0],start_indices[1]:start_indices[1]+new_shape[1]]
-    return crop_array
+    crop_wcs = wcs[start_indices[0]:start_indices[0]+new_shape[0],start_indices[1]:start_indices[1]+new_shape[1]]
+    return crop_array,crop_wcs
 
 def visualize_image(array,name,wcs):
     rescaled_array = (array+abs(np.min(array))*1.00001)
@@ -61,5 +62,5 @@ for name in gal_names:
         print(name)
         path = name+'/'+name+'mom0.fits'
         data,header,wcs = read_data(path)
-        new_array=crop_array(data[0])
-        visualize_image(new_array,name,wcs)
+        new_array,new_wcs=crop_array(data[0],wcs)
+        visualize_image(new_array,name,new_wcs)
