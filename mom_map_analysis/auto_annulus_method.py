@@ -2,6 +2,15 @@ import numpy as np
 import os
 import csv
 
+'''
+Automatically generates concentric regions around galaxy.
+
+Calculates galaxy vals and and adds to final results or adds to manual analysis csv
+
+Run in CASA enviroment 
+source /vol/software/software/astro/casa/initcasa.sh
+
+'''
 class Gal:
     def __init__(self,row):
         self.row= row
@@ -56,7 +65,7 @@ class Gal:
             print('rms of background: '+ str(bg_rms))
         else:
             print('negative norm flux => DO BY HAND')
-            with open('/users/jburke/ebhis_scripts/workflow_results/need_manual_analysis.csv','a') as file:
+            with open('/users/jburke/ebhis_scripts/mom_map_analysis/results/need_manual_analysis.csv','a') as file:
                 lines = [self.name,
                         self.ra,
                         self.dec,
@@ -131,17 +140,17 @@ class Gal:
                 self.annulus_calc(sum3,npix3,sum4,npix4)
             else:
                 print('Large variation between annuli(>10%)=> DO BY HAND')
-                with open('/users/jburke/ebhis_scripts/workflow_results/need_manual_analysis.csv','a') as file:
+                with open('/users/jburke/ebhis_scripts/mom_map_analysis/results/need_manual_analysis.csv','a') as file:
                     write= csv.writer(file)
                     write.writerow(self.row)
         else:
             print('galaxy is not detected=> DO BY HAND')
-            with open('/users/jburke/ebhis_scripts/workflow_results/need_manual_analysis.csv','a') as file:
+            with open('/users/jburke/ebhis_scripts/mom_map_analysis/results/need_manual_analysis.csv','a') as file:
                 write= csv.writer(file)
                 write.writerow(self.row)
 
     def write_output(self,norm_flux_jy,norm_uncert):
-        file1 = '/users/jburke/ebhis_scripts/workflow_results/final_results.csv'
+        file1 = '/users/jburke/ebhis_scripts/mom_map_analysis/results/final_results.csv'
         with open(file1,'a') as file:
             a= norm_flux_jy
             b=norm_uncert
@@ -162,17 +171,17 @@ class Gal:
 with open('/users/jburke/Desktop/test_gal_list.csv','r') as f:
     reader = csv.reader(f)
     header = next(reader)
-    with open('/users/jburke/ebhis_scripts/workflow_results/need_manual_analysis.csv','w') as f:
+    with open('/users/jburke/ebhis_scripts/mom_map_analysis/results/need_manual_analysis.csv','w') as f:
         csv_writer = csv.writer(f)
         csv_writer.writerow(header)
 #empty csv to save final results in
     header_new = header + ['flux [Jy km/s BA^-1]','uncert']
-    with open('/users/jburke/ebhis_scripts/workflow_results/final_results.csv','w') as f:
+    with open('/users/jburke/ebhis_scripts/mom_map_analysis/results/final_results.csv','w') as f:
         csv_writer = csv.writer(f)
         csv_writer.writerow(header_new)
 
 #go through csv of galaxies woth mom0 maps and run analysis on them and save results to correct csv file
-with open('/users/jburke/ebhis_scripts/workflow_results/gals_with_m0maps.csv','r') as f:
+with open('/users/jburke/ebhis_scripts/mom_map_analysis/results/gals_with_m0maps.csv','r') as f:
     reader = csv.reader(f)
     header = next(reader)
     for row in reader:

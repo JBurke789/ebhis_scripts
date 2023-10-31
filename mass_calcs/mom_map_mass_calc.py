@@ -1,8 +1,12 @@
 import csv
 import numpy
+'''
+Runs through final results (mom map method) CSV and calculates mass using distance
+Saves results to mass results csv
 
+'''
 gal_rows=[]
-with open('/users/jburke/ebhis_scripts/workflow_results/final_results.csv','r') as f:
+with open('/users/jburke/ebhis_scripts/mom_map_analysis/results/final_results.csv','r') as f:
     reader = csv.reader(f)
     header = next(reader)
     for row in reader:

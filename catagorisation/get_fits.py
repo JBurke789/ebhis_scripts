@@ -6,7 +6,12 @@ Run after gal_sort.py .
 
 Runs through the CSV files generated of galaxy candidates. Runs command to make datacubes from EBHIS. 
 Saves each datacube to its own directory.
-Needs enviroment already open.
+Needs ebhis enviroment already open.
+
+source /vol/ebhis2/data1/bwinkel/software/.activate_conda_hook.sh
+
+conda activate ebhis
+
 
 """
 def data_request(name, ra ,dec):
@@ -30,9 +35,9 @@ def data_request(name, ra ,dec):
     command = 'python /vol/ebhis2/data1/bwinkel/software/hpxtools/hpxgrid4.py -ds EBHIS -s E -l ' + ra_vals + dec_vals + filename
     os.system(command)    
 
-autogen_file_path = '/users/jburke/ebhis_scripts/workflow_results/auto_analyse.csv'
-mw_overlap_file_path = '/users/jburke/ebhis_scripts/workflow_results/MW_overlap.csv'
-no_w50_file_path ='/users/jburke/ebhis_scripts/workflow_results/no_linewidth.csv'
+autogen_file_path = '/users/jburke/ebhis_scripts/catagorisation/cat results/auto_analyse.csv'
+mw_overlap_file_path = '/users/jburke/ebhis_scripts/catagorisation/cat results/MW_overlap.csv'
+no_w50_file_path ='/users/jburke/ebhis_scripts/catagorisation/cat results/no_linewidth.csv'
 
 
 print('...')

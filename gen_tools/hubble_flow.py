@@ -4,6 +4,9 @@ matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import csv
 
+'''
+Plots rv vs distance to investigate hubble flow
+'''
 rv_vals =[]
 rv_uncert = []
 names =[]

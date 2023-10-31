@@ -8,14 +8,20 @@ import astropy.visualization
 from astropy.wcs import WCS
 from matplotlib.ticker import ScalarFormatter
 
-
+"""
+makes mom map from fits file for single galaxy.
+run in full list directory
+"""
+name = 'UGC12588'
+zoom_level = 7 #change  to zoom in. Always odd to have centered
+#peak_val = 8 #include if brighter gal in field of view
 
 
 
 def crop_array(array,wcs):
     #crops to center of image 
     orig_shape = array.shape
-    new_shape = (orig_shape[0]//5,orig_shape[1]//5)
+    new_shape = (orig_shape[0]//zoom_level,orig_shape[1]//zoom_level)
     start_indices = ((orig_shape[0]-new_shape[0]) // 2, (orig_shape[1] - new_shape[1]) // 2)
     crop_array = array[start_indices[0]:start_indices[0]+new_shape[0],start_indices[1]:start_indices[1]+new_shape[1]]
     crop_wcs = wcs[start_indices[0]:start_indices[0]+new_shape[0],start_indices[1]:start_indices[1]+new_shape[1]]
@@ -25,7 +31,8 @@ def visualize_image(array,name,wcs):
     rescaled_array = (array+abs(np.min(array))*1.00001)
     fig = plt.figure()
     ax=plt.subplot(projection=wcs)  
-    plt.imshow(rescaled_array,vmin = 10, vmax=50)
+    plt.imshow(rescaled_array,vmin = 0.2*np.max(rescaled_array), vmax=np.max(rescaled_array))#comment out if brighter gal in field of view
+    #plt.imshow(rescaled_array,vmin = 0.2*peak_val, vmax=peak_val
     ax.set_xlabel('Right Ascension')
     ax.set_ylabel('Declination')
     ax.set_title(name)
@@ -33,10 +40,9 @@ def visualize_image(array,name,wcs):
     cbar.formatter = ScalarFormatter(useMathText=False)
     cbar.ax.set_ylabel('K km/s')
     cbar.update_ticks()
-    contours = plt.contour(rescaled_array, levels=[0.5*np.max(rescaled_array)], colors='red', linewidths=1)
+    contours = plt.contour(rescaled_array, levels=[0.5*np.max(rescaled_array)], colors='red', linewidths=1)#comment out if brighter gal in FOV
+    #contours = plt.contour(rescaled_array, levels=[0.5*peak_val], colors='red', linewidths=1)
     fig_name = '/users/jburke/Desktop/results/mom0_maps/'+name+'.png'
-    #plt.show()
-    #plt.savefig(fig_name)
     plt.show()
 
 def read_data(filepath):
@@ -48,7 +54,6 @@ def read_data(filepath):
     dropped = wcs.dropaxis(2)
     return(array,header,dropped)
 
-name = 'NGC4288'
 path = name+'/'+name+'mom0.fits'
 data,header,wcs = read_data(path)
 new_array,new_wcs=crop_array(data[0],wcs)

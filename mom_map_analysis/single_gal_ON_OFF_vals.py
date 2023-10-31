@@ -1,7 +1,17 @@
 import numpy as np
 import csv
 
-name = 'CVnHI'
+'''
+Calculates annulus method for single galaxy.
+appends to final results csv so need to check by hand if galaxy is already in there
+
+Need to have galaxy already open in casa viewer and run this in different terminal
+'''
+
+
+
+
+name = 'NGC4288'
 
 
 gal_results=[]

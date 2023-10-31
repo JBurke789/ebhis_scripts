@@ -1,6 +1,14 @@
 import csv
 import os
 
+"""
+Imports fits file to CASA format
+
+Run in casa 
+
+source /vol/software/software/astro/casa/initcasa.sh
+"""
+
 #function to import the datacube of a single galaxy to a CASA format
 def import_fit(name):
     datacube_path = name+'/'+name+'.fits'

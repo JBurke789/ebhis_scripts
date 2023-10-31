@@ -1,7 +1,16 @@
 import csv 
 import os
 import numpy as np
+'''
+Calculates galaxy vals.
+Runs through list of gals for manual analysis.
 
+adds to final results or cant analyse list
+
+Run in casa
+source /vol/software/software/astro/casa/initcasa.sh
+
+'''
 class galaxy:
     def __init__(self,row):
         self.row= row

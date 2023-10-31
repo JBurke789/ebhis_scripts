@@ -11,6 +11,14 @@ import math
 from matplotlib.ticker import ScalarFormatter
 
 
+"""
+makes for all galaxies.
+
+No zooming or rescaling.
+
+Figures pop up and need to be saved by hand
+"""
+
 def crop_array(array,wcs):
     #crops to center of image 
     orig_shape = array.shape
@@ -56,7 +64,7 @@ with open('/users/jburke/ebhis_scripts/workflow_results/final_results.csv','r') 
         gal_names.append(row[0])
 
 for name in gal_names:
-    if name =='HIZSS003'or name=='SexA':
+    if name =='HIZSS003'or name=='SexA':#problems because of edge of FOV
         pass
     else:
         print(name)

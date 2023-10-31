@@ -4,6 +4,10 @@ matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import csv
 
+'''
+histogram of galaxy masses
+'''
+
 mass_vals =[]
 with open('/users/jburke/ebhis_scripts/workflow_results/mass_results.csv','r') as f:
     reader = csv.reader(f)

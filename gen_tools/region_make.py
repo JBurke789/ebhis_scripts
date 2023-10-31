@@ -1,5 +1,8 @@
 import csv
 
+'''
+makes a region to mark the location of each galaxy in casa
+'''
 
 
 

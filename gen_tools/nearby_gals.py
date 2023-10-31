@@ -2,6 +2,10 @@ import csv
 import numpy as np
 
 
+'''
+Lists galaxies close to a given galaxy and gives coords
+'''
+
 name = input('Name: ')
 
 
@@ -12,7 +16,9 @@ with open('/users/jburke/Desktop/full_gal_list.csv','r') as file:
     for row1 in reader1:
         if name == row1[0]:
             ra = row1[1]
-            dec = row1[2]    
+            dec = row1[2]
+            print(name)    
+            print(ra,',',dec)
 
         
 
