@@ -71,7 +71,7 @@ def integrate_spectrum(vel,flux_cleaned):
 
     return tot_flux, uncert
 
-
+"""
 #looks for csv file to store spectral results
 csvpath = '/users/jburke/ebhis_scripts/new_spec/detailed_results.csv'
 if not os.path.exists(csvpath):
@@ -85,11 +85,11 @@ if not os.path.exists(csvpath):
             csv_writer.writerow(header)
 else:
     pass
+"""
 
 
 
-
-with open('/users/jburke/ebhis_scripts/workflow_results/MW_overlap.csv','r') as f:
+with open('/users/jburke/ebhis_scripts/catagorisation/cat results/MW_overlap.csv','r') as f:
     reader = csv.reader(f)
     header = next(reader)
     for row in reader:
@@ -117,6 +117,7 @@ with open('/users/jburke/ebhis_scripts/workflow_results/MW_overlap.csv','r') as 
         ax1.legend()
         plt.show(block=False)
 
+        """
         #get details for analysis
         note = input('Note: (1=MW overlap,2=could not see,3=clear) ')
         if note=='1':
@@ -138,6 +139,7 @@ with open('/users/jburke/ebhis_scripts/workflow_results/MW_overlap.csv','r') as 
             with open(csvpath,'a') as f:
                 csv_writer = csv.writer(f)
                 csv_writer.writerow(new_row)
+                """
 
 
 
