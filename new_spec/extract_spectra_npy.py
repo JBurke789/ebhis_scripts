@@ -1,5 +1,6 @@
 import csv
 import numpy as np
+import copy
 """
 runs through csv and extracts spectra from casa files and saves as numpy file
 run in casa 
@@ -95,33 +96,36 @@ with open('/users/jburke/ebhis_scripts/catagorisation/cat_results/MW_overlap.csv
    header = next(reader)
    for row in reader:
         name = row[0]
+        if name =='GARLAND' or name =='MB3' or name=='Dw1' or name =='UGC11583' or name =='BK3N' or name=='HolmIX' or name=='MESSIER081' or name=='ClumpIII'or name=='ClumpI'or name=='A0952+69'or  name=='MESSIER032'or name=='MESSIER082'or name=='Willman1' or name=='[CKT2009]d0959+68':
+           pass
+        else:
 
-        ON_temp,ON_h1_temp,ON_h2_temp,ON_h3_temp,ON_h4_temp,OFF_temp_norm,OFF_temp_h1_norm,OFF_temp_h2_norm,OFF_temp_h3_norm,OFF_temp_h4_norm=extract_spectra(name)
+          ON_temp,ON_h1_temp,ON_h2_temp,ON_h3_temp,ON_h4_temp,OFF_temp_norm,OFF_temp_h1_norm,OFF_temp_h2_norm,OFF_temp_h3_norm,OFF_temp_h4_norm=extract_spectra(name)
 
-        ON_flux = unit_conversion(ON_temp)
-        OFF_flux = unit_conversion(OFF_temp_norm)
-        vels = get_vel(name,ON_temp,'/raw_image.im')
-        save_npy(name,vels,ON_flux,OFF_flux,'/man_spec_h0.npy')
+          ON_flux = unit_conversion(ON_temp)
+          OFF_flux = unit_conversion(OFF_temp_norm)
+          vels = get_vel(name,ON_temp,'/raw_image.im')
+          save_npy(name,vels,ON_flux,OFF_flux,'/man_spec_h0.npy')
 
-        ON_flux = unit_conversion(ON_h1_temp)
-        OFF_flux = unit_conversion(OFF_temp_h1_norm)
-        vels = get_vel(name,ON_h1_temp,'/hanning_smoothed1.im')
-        save_npy(name,vels,ON_flux,OFF_flux,'/man_spec_h1.npy')
+          ON_flux = unit_conversion(ON_h1_temp)
+          OFF_flux = unit_conversion(OFF_temp_h1_norm)
+          vels = get_vel(name,ON_h1_temp,'/hanning_smoothed1.im')
+          save_npy(name,vels,ON_flux,OFF_flux,'/man_spec_h1.npy')
 
-        ON_flux = unit_conversion(ON_h2_temp)
-        OFF_flux = unit_conversion(OFF_temp_h2_norm)
-        vels = get_vel(name,ON_h2_temp,'/hanning_smoothed2.im')
-        save_npy(name,vels,ON_flux,OFF_flux,'/man_spec_h2.npy')
+          ON_flux = unit_conversion(ON_h2_temp)
+          OFF_flux = unit_conversion(OFF_temp_h2_norm)
+          vels = get_vel(name,ON_h2_temp,'/hanning_smoothed2.im')
+          save_npy(name,vels,ON_flux,OFF_flux,'/man_spec_h2.npy')
 
-        ON_flux = unit_conversion(ON_h3_temp)
-        OFF_flux = unit_conversion(OFF_temp_h3_norm)
-        vels = get_vel(name,ON_h3_temp,'/hanning_smoothed3.im')
-        save_npy(name,vels,ON_flux,OFF_flux,'/man_spec_h3.npy')
+          ON_flux = unit_conversion(ON_h3_temp)
+          OFF_flux = unit_conversion(OFF_temp_h3_norm)
+          vels = get_vel(name,ON_h3_temp,'/hanning_smoothed3.im')
+          save_npy(name,vels,ON_flux,OFF_flux,'/man_spec_h3.npy')
 
-        ON_flux = unit_conversion(ON_h4_temp)
-        OFF_flux = unit_conversion(OFF_temp_h4_norm)
-        vels = get_vel(name,ON_h4_temp,'/hanning_smoothed4.im')
-        save_npy(name,vels,ON_flux,OFF_flux,'/man_spec_h4.npy')
+          ON_flux = unit_conversion(ON_h4_temp)
+          OFF_flux = unit_conversion(OFF_temp_h4_norm)
+          vels = get_vel(name,ON_h4_temp,'/hanning_smoothed4.im')
+          save_npy(name,vels,ON_flux,OFF_flux,'/man_spec_h4.npy')
 
 
-   
+    
