@@ -6,13 +6,9 @@ import csv
 from scipy import integrate
 import os
 
-'''
-Runs through csv of gals with MW overlap not in close groups.
-plots all hanning levels. 
-replots selected hanning level
-integrates over selected vel range
-saves results to csv
-'''
+"""
+Gets RV and w50 vals for spectra with MW overlap
+"""
 
 def load_array(name,spec):
     array = np.load(name+spec)
@@ -65,18 +61,37 @@ def plot_single(name,spectra,h,rv,w50):#plots spectrumn of selected hanning leve
     h_vel = float(input('high vel: '))
     return l_vel,h_vel
 
-def spec_int(spectra,h,low_vel,high_vel):#intigrates spectrum over selected velocity range. returns flux and uncert
+def get_vals(spectra,h,low_vel,high_vel):
     mask = (spectra[h][0]>=low_vel) & (spectra[h][0]<=high_vel)
     gal_vels = spectra[h][0][mask]
     gal_flux = spectra[h][1][mask]-spectra[h][2][mask]
-    tot_flux = integrate.simps(gal_flux,gal_vels)
-    rms_jy = (0.09+h*0.09)/(1.28*8.64)#accounts for hanning filtering
-    uncert = rms_jy*len(gal_vels)
-    print('Total Flux:',tot_flux,'+- ',uncert)
-    return tot_flux, uncert
+    peak_index = np.argmax(gal_flux)
+    max_val = gal_flux[peak_index]
+    hm = max_val/2.0
+    l_index = 0
+    while gal_flux[l_index] < hm:
+        l_index+=1
+    r_index = len(gal_vels)-1
+    while gal_flux[r_index]<hm:
+        r_index-=1
+    fwhm=abs(gal_vels[r_index]-gal_vels[l_index])
+    step_size = abs(gal_vels[peak_index]-gal_vels[peak_index-1])
+    rad_vel = (gal_vels[r_index]+gal_vels[l_index])/2.0
+    print('FWHM: ',fwhm,' +/- ', step_size,' km/s')
+    print('RV: ',rad_vel, ' +/- ', step_size*2,' km/s')
 
-def save_results(name,flux,uncert,l_vel,h_vel,h):# appends or updates results in array
-    new_line = [name,flux,uncert,l_vel,h_vel,h]
+    fig2,ax2 = plt.subplots()
+    ax2.plot(gal_vels,gal_flux,label='galaxy')
+    ax2.set_xlabel('Velocity [km/s]')
+    ax2.set_ylabel('flux [Jy/BA]')
+    ax2.legend()
+    ax2.set_title(name)
+    ax2.hlines(hm,gal_vels[l_index],gal_vels[r_index])
+    plt.show()
+    return fwhm,rad_vel,step_size
+
+def save_results(name,rv,stepsize,fwhm,stepsize2,h):# appends or updates results in array
+    new_line = [name,rv,stepsize,fwhm,stepsize2,h]
     if name in gal_names:
         for i,row in enumerate(gal_results):
             if row[0]==name:
@@ -84,12 +99,10 @@ def save_results(name,flux,uncert,l_vel,h_vel,h):# appends or updates results in
     else:
         gal_results.append(new_line)
 
-    #return gal_results
-        
 #load galaxies already analysed
 gal_names=[]
 gal_results=[]
-with open('/users/jburke/ebhis_scripts/new_spec/results.csv','r') as f:
+with open('/users/jburke/ebhis_scripts/w50_stuff/MW_overlap_results.csv','r') as f:
     reader = csv.reader(f)
     header1 = next(reader)
     for row in reader:
@@ -113,18 +126,18 @@ with open('/users/jburke/ebhis_scripts/catagorisation/cat_results/MW_overlap.csv
             spectra= get_spectra(name)
             h=plot_spectra(name,spectra[0],spectra[1],spectra[2],spectra[3],spectra[4],rv,w50)
             l_vel,h_vel = plot_single(name,spectra,h,rv,w50)
-            flux,uncert = spec_int(spectra,h,l_vel,h_vel)
+            fwhm,rad_vel,step_size = get_vals(spectra,h,l_vel,h_vel)
             save = input('Save results? (y/n): ')
             if save =='y':
-                save_results(name,flux,uncert,l_vel,h_vel,h)
+                save_results(name,rad_vel,step_size,fwhm,step_size*2,h)
             else:
-                pass
+                save_results(name,'-','-','-','-','-')
+
         else:
             print(name+' - no file.')
 
-#saves results to csv
-with open('/users/jburke/ebhis_scripts/new_spec/results.csv','w') as f:
+            #saves results to csv
+with open('/users/jburke/ebhis_scripts/w50_stuff/MW_overlap_results.csv','w') as f:
     writer = csv.writer(f)
     writer.writerow(header1)
     writer.writerows(gal_results)
-
