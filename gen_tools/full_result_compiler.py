@@ -83,7 +83,10 @@ for rv_val in rv_vals:
         if gal[0] == name:
             gal.extend(add_bit)
 
-print(full_list[0])
+for i in full_list:
+    if len(i)==9:
+        add_bit=['-','-','-','-']
+        i.extend(add_bit)
 
 #check for mom map
 for gal in full_list:
@@ -112,6 +115,6 @@ print(full_list[0])
 
 with open('/users/jburke/Desktop/results/full_results.csv','w') as f:
     writer = csv.writer(f)
-    header = ['name','ra','dec','dist','flux ','+/-','mass x10^6Msol','+/-','rv','+/-','w50','+/-','mom map','spec']
+    header = ['name','ra','dec','dist','flux ','+/-','method','mass x10^6Msol','+/-','rv','+/-','w50','+/-','mom map','spec']
     writer.writerow(header)
     writer.writerows(full_list)
