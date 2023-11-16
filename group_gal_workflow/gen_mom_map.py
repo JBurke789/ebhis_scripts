@@ -22,8 +22,8 @@ for i in gal_info:
         w50=0
     else:
         w50=float(i[6])
-    min_vels.append(rad_vel-w50)
-    max_vels.append(rad_vel+w50)
+    min_vels.append(rad_vel-w50/2.0)
+    max_vels.append(rad_vel+w50/2.0)
 
 low_lim  =min(min_vels)-10
 high_lim =max(max_vels)+10
