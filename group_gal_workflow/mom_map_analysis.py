@@ -34,6 +34,7 @@ if save == 'y':
     for i in gal_results:
         groups_analysed.append(i[0])
         if i[0]==group:
+            print('value changed')
             i[1]=str(norm_flux_jy)
             i[2]=str(norm_uncert)
     #append gal vals if not already analysed
@@ -41,6 +42,7 @@ if save == 'y':
         new_row = [group,str(norm_flux_jy),str(norm_uncert)]
         gal_results.append(new_row)
     sorted_gal_results= sorted(gal_results,key = lambda x: float(x[0]))
+    print(sorted_gal_results)
     with open('/users/jburke/ebhis_scripts/group_gal_results/group_results.csv','w') as f:
         csv_writer = csv.writer(f)
         header=['Group','flux [Jy km/s /BA]','uncert']

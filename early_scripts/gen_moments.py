@@ -5,8 +5,8 @@ import numpy as np
 im_name='raw_image.im'
 #dB = 'G'
 
-low_chan=550
-high_chan=900
+low_chan=820
+high_chan=940
 #MW_high_chan = 125
 
 #xbl= 5 #box around galaxy

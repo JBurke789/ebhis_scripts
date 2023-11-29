@@ -12,8 +12,9 @@ from matplotlib.ticker import ScalarFormatter
 makes mom map from fits file for single galaxy.
 run in full list directory
 """
-name = 'UGC12588'
-zoom_level = 7 #change  to zoom in. Always odd to have centered
+name = 'UGC07827'
+max_val=3.2
+zoom_level = 5 #change  to zoom in. Always odd to have centered
 #peak_val = 8 #include if brighter gal in field of view
 
 
@@ -54,7 +55,7 @@ def read_data(filepath):
     dropped = wcs.dropaxis(2)
     return(array,header,dropped)
 
-path = name+'/'+name+'mom0.fits'
+path = name+'/mom0.fits'
 data,header,wcs = read_data(path)
 new_array,new_wcs=crop_array(data[0],wcs)
 print(new_array.shape)

@@ -44,8 +44,8 @@ for i in galaxy_names:
 np.save('group_info.npy',rows)
 
 #make data request in EBHIS
-ra_val = str(min(ra_vals)-2) + ' ' + str(max(ra_vals)+2)
-dec_val = ' ' + str(min(dec_vals)-2) + ' ' + str(max(dec_vals)+2)
+ra_val = str(min(ra_vals)-5) + ' ' + str(max(ra_vals)+5)
+dec_val = ' ' + str(min(dec_vals)-5) + ' ' + str(max(dec_vals)+5)
 filename = ' data_cube.fits'
 
 command = 'python /vol/ebhis2/data1/bwinkel/software/hpxtools/hpxgrid4.py -ds EBHIS -s E -l ' + ra_val + dec_val + filename

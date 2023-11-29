@@ -14,7 +14,8 @@ run in full list directory
 """
 name = ' '
 zoom_level = 1 #change  to zoom in. Always odd to have centered
-peak_val = 22.4 #include if brighter gal in field of view
+peak_val = 7.17
+ #include if brighter gal in field of view
 
 
 
@@ -51,9 +52,16 @@ def visualize_image(array,info,wcs):
             ax.annotate(name, xy=(ra, dec), xycoords=ax.get_transform('world'))
             ax.scatter(ra, dec, transform=ax.get_transform('world'), s=100,
            edgecolor='black', facecolor='none')
-        ax.annotate('DDO217', xy=(352.4946,40.9903), xycoords=ax.get_transform('world'))
-        ax.scatter(352.4946,40.9903, transform=ax.get_transform('world'), s=100,
+        ax.annotate('HolmIV', xy=(208.6879 , 53.9047), xycoords=ax.get_transform('world'))
+        ax.scatter(208.6879 , 53.9047, transform=ax.get_transform('world'), s=100,
            edgecolor='black', facecolor='none')
+        ax.annotate('UGC08882', xy=(209.3108 , 54.1008), xycoords=ax.get_transform('world'))
+        ax.scatter(209.3108 , 54.1008, transform=ax.get_transform('world'), s=100,
+           edgecolor='black', facecolor='none')
+        ax.annotate('LV J1354+5438', xy=(208.7108 , 54.6472), xycoords=ax.get_transform('world'))
+        ax.scatter(208.7108 , 54.6472, transform=ax.get_transform('world'), s=100,
+           edgecolor='black', facecolor='none')
+    
     cbar=plt.colorbar()
     cbar.formatter = ScalarFormatter(useMathText=False)
     cbar.ax.set_ylabel('K km/s')
@@ -74,6 +82,7 @@ def read_data(filepath):
 
 path = 'mom0.fits'
 info = np.load('group_info.npy')
+
 print(info)
 data,header,wcs = read_data(path)
 new_array,new_wcs=crop_array(data[0],wcs)

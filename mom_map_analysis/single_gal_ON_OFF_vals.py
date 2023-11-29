@@ -11,11 +11,11 @@ Need to have galaxy already open in casa viewer and run this in different termin
 
 
 
-name = 'NGC4288'
+name = 'NGC4242'
 
 
 gal_results=[]
-with open('/users/jburke/ebhis_scripts/workflow_results/final_results.csv','r')as f:
+with open('/users/jburke/ebhis_scripts/mom_map_analysis/results/final_results.csv','r')as f:
     reader = csv.reader(f)
     header = next(reader)
     for row in reader:
@@ -49,7 +49,8 @@ with open('/users/jburke/Desktop/full_gal_list.csv','r')as f:
             init_row = row
 
 new_row = init_row+[norm_flux_jy,norm_uncert]
+print(new_row)
 
-with open('/users/jburke/ebhis_scripts/workflow_results/final_results.csv','a')as f:
+with open('/users/jburke/ebhis_scripts/mom_map_analysis/results/final_results.csv','a')as f:
     writer = csv.writer(f)
     writer.writerow(new_row)
