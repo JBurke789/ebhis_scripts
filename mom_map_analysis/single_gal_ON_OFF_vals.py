@@ -11,7 +11,7 @@ Need to have galaxy already open in casa viewer and run this in different termin
 
 
 
-name = 'NGC4242'
+name = input('Gal name:')
 
 
 gal_results=[]
