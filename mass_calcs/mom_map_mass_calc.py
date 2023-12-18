@@ -33,7 +33,7 @@ for row in gal_rows:
     print(new_row)
 
 
-with open('/users/jburke/ebhis_scripts/workflow_results/mass_results.csv','w') as f:
+with open('/users/jburke/ebhis_scripts/mass_calcs/results/mom_map_mass_results.csv','w') as f:
     writer = csv.writer(f)
     header = ['name','flux [Jy/BA]','+/-','mass [M_sol x10^6]','+/-']
     writer.writerow(header)

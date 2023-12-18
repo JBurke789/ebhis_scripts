@@ -1,7 +1,9 @@
 import os 
 import csv
 
-
+'''
+source /vol/software/software/astro/casa/initcasa.sh
+'''
 
 def run_han(name):
     ia.open(name+'/raw_image.im') # open the file
