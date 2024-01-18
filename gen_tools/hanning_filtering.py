@@ -10,7 +10,7 @@ source /vol/software/software/astro/casa/initcasa.sh
 """
 
 def run_han(name):
-    ia.open(name+'/full_raw_image.im') # open the file
+    ia.open(name+'/MW_pipe.im') # open the file
     ia.hanning(name+'/hanning_smoothed1.im', drop=False)# submit outfile and set (drop pixels) to false
     ia.close()
     ia.open(name+'/hanning_smoothed1.im')
@@ -20,7 +20,7 @@ def run_han(name):
     ia.hanning(name+'/hanning_smoothed3.im', drop=False)
     ia.close()
     ia.open(name+'/hanning_smoothed3.im')
-    ia.hanning(name+'/hanning_smoothed4.im', drop=False)
+    ia.hanning(name+'/MW_hanning_smoothed4.im', drop=False)
     ia.close()
     print("Hanning run on ", name)
 """
@@ -30,6 +30,6 @@ with open('/users/jburke/ebhis_scripts/catagorisation/cat_results/MW_overlap.csv
     for row in reader:
         run_han(row[0])
 """
-name = 'M31_M33'
+name = 'NGC4449'
 
 run_han(name)

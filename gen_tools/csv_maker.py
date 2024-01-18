@@ -4,7 +4,9 @@ import csv
 Makes blank csv file with header
 '''
 
-with open('/users/jburke/Desktop/results/full_results.csv','w') as f:
+with open('/users/jburke/ebhis_scripts/group_gal_results/mass_results.csv','w') as f:
     writer = csv.writer(f)
-    header = ['name','ra','dec','dist','flux ','+/-','mass x10^6Msol','+/-','rv','+/-','w50','+/-']
+    header = ['group','m_dist','flux','uncert','mass']
     writer.writerow(header)
+
+
