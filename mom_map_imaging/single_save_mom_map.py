@@ -39,6 +39,12 @@ def visualize_image(array,name,wcs):
     ax.set_ylabel('Declination')
     ax.set_title('MW moment 0')
     cbar=plt.colorbar()
+    full = ax.imshow(rescaled_array)#comment out if brighter gal in field of view
+    #plt.imshow(rescaled_array,vmin = 0.2*peak_val, vmax=peak_val
+    ax.set_xlabel('Right Ascension')
+    ax.set_ylabel('Declination')
+    ax.set_title('EG pipeline')
+    cbar=fig.colorbar(full,ax=ax)
     cbar.formatter = ScalarFormatter(useMathText=False)
     cbar.ax.set_ylabel(' K km/s')
     cbar.update_ticks()
