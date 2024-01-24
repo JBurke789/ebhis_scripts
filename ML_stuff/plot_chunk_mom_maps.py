@@ -22,30 +22,21 @@ def read_data(filepath):
     array = hdul[0].data
     header = hdul[0].header
     hdul.close()
-    wcs=WCS(header)
-    dropped = wcs.dropaxis(2)
-    return(array,header,dropped)
-
-def crop_array(array,wcs):
-    #crops to center of image 
-    orig_shape = array.shape
-    new_shape = (orig_shape[0]//1,orig_shape[1]//1)
-    start_indices = ((orig_shape[0]-new_shape[0]) // 2, (orig_shape[1] - new_shape[1]) // 2)
-    crop_array = array[start_indices[0]:start_indices[0]+new_shape[0],start_indices[1]:start_indices[1]+new_shape[1]]
-    crop_wcs = wcs[start_indices[0]:start_indices[0]+new_shape[0],start_indices[1]:start_indices[1]+new_shape[1]]
-    return crop_array,crop_wcs
+    return(array,header)
 
 def make_string(vel):
     string= str(vel[0])+ ' - '+str(vel[1])+ ' km/s '
     return string
 
-def visualize_image(array1,array2,array3,array4,array5,array6,array7,array8,wcs,min,max):
+def visualize_image(array1,array2,array3,array4,array5,array6,array7,array8,min,max):
    
     fig = plt.figure()
-    fig.suptitle('Moment 1 maps')
+    fig.suptitle('Moment 2 maps')
     
     fig.add_subplot(3,3,1)
-    im1=plt.imshow(array1,vmin=vels[0][0],vmax=vels[0][1])
+    #im1=plt.imshow(array1,vmin=min,vmax=max*0.1)
+    #im1=plt.imshow(array1,vmin=vels[0][0],vmax=vels[0][1])
+    im1=plt.imshow(array1,vmin=0,vmax=1360)
     plt.title(make_string(vels[0]))
     plt.xlabel('')
     plt.ylabel('')
@@ -56,7 +47,9 @@ def visualize_image(array1,array2,array3,array4,array5,array6,array7,array8,wcs,
     
 
     fig.add_subplot(332)
-    im2=plt.imshow(array2,vmin=vels[1][0],vmax=vels[1][1])
+    #im2=plt.imshow(array2,vmin=min,vmax=max)
+    #im2=plt.imshow(array2,vmin=vels[1][0],vmax=vels[1][1])
+    im2=plt.imshow(array2,vmin=0,vmax=2500)
     plt.title(make_string(vels[1]))
     cbar=plt.colorbar()
     cbar.formatter = ScalarFormatter(useMathText=False)
@@ -64,7 +57,9 @@ def visualize_image(array1,array2,array3,array4,array5,array6,array7,array8,wcs,
     cbar.update_ticks()
 
     fig.add_subplot(333)
-    im2=plt.imshow(array3,vmin=vels[2][0],vmax=vels[2][1])
+    #im3=plt.imshow(array3,vmin=min,vmax=max)
+    #im3=plt.imshow(array3,vmin=vels[2][0],vmax=vels[2][1])
+    im3=plt.imshow(array3,vmin=0,vmax=3500)
     plt.title(make_string(vels[2]))
     cbar=plt.colorbar()
     cbar.formatter = ScalarFormatter(useMathText=False)
@@ -72,7 +67,9 @@ def visualize_image(array1,array2,array3,array4,array5,array6,array7,array8,wcs,
     cbar.update_ticks()
 
     fig.add_subplot(334)
-    im2=plt.imshow(array4,vmin=vels[3][0],vmax=vels[3][1])
+    #im4=plt.imshow(array4,vmin=min,vmax=max)
+    #im4=plt.imshow(array4,vmin=vels[3][0],vmax=vels[3][1])
+    im4=plt.imshow(array4,vmin=0,vmax=2500)
     plt.title(make_string(vels[3]))
     cbar=plt.colorbar()
     cbar.formatter = ScalarFormatter(useMathText=False)
@@ -80,7 +77,9 @@ def visualize_image(array1,array2,array3,array4,array5,array6,array7,array8,wcs,
     cbar.update_ticks()
 
     fig.add_subplot(335)
-    im2=plt.imshow(array5,vmin=vels[4][0],vmax=vels[4][1])
+    #im5=plt.imshow(array5,vmin=min,vmax=max)
+    #im5=plt.imshow(array5,vmin=vels[4][0],vmax=vels[4][1])
+    im5=plt.imshow(array5,vmin=0,vmax=2500)
     plt.title(make_string(vels[4]))
     cbar=plt.colorbar()
     cbar.formatter = ScalarFormatter(useMathText=False)
@@ -88,7 +87,9 @@ def visualize_image(array1,array2,array3,array4,array5,array6,array7,array8,wcs,
     cbar.update_ticks()
 
     fig.add_subplot(336)
-    im2=plt.imshow(array6,vmin=vels[5][0],vmax=vels[5][1])
+    #im6=plt.imshow(array6,vmin=min,vmax=max)
+    #im6=plt.imshow(array6,vmin=vels[5][0],vmax=vels[5][1])
+    im6=plt.imshow(array6,vmin=0,vmax=2500)
     plt.title(make_string(vels[5]))
     cbar=plt.colorbar()
     cbar.formatter = ScalarFormatter(useMathText=False)
@@ -96,7 +97,9 @@ def visualize_image(array1,array2,array3,array4,array5,array6,array7,array8,wcs,
     cbar.update_ticks()
 
     fig.add_subplot(337)
-    im2=plt.imshow(array7,vmin=vels[6][0],vmax=vels[6][1])
+    #im7=plt.imshow(array7,vmin=min,vmax=max)
+    #im7=plt.imshow(array7,vmin=vels[6][0],vmax=vels[6][1])
+    im7=plt.imshow(array7,vmin=0,vmax=2500)
     plt.title(make_string(vels[6]))
     cbar=plt.colorbar()
     cbar.formatter = ScalarFormatter(useMathText=False)
@@ -104,7 +107,9 @@ def visualize_image(array1,array2,array3,array4,array5,array6,array7,array8,wcs,
     cbar.update_ticks()
 
     fig.add_subplot(338)
-    im2=plt.imshow(array8,vmin=vels[7][0],vmax=vels[7][1])
+    #im8=plt.imshow(array8,vmin=min,vmax=max)
+    #im8=plt.imshow(array8,vmin=vels[7][0],vmax=vels[7][1])
+    im8=plt.imshow(array8,vmin=0,vmax=3500)
     plt.title(make_string(vels[7]))
     cbar=plt.colorbar()
     cbar.formatter = ScalarFormatter(useMathText=False)
@@ -121,19 +126,34 @@ def min_max(arrays):
         mins.append(np.min(array))
     return max(maxes),min(mins)
 
+def make_mask(array, min,max):
+    masked_array = np.ma.masked_outside(array, min, max)
+    return masked_array
+
+def rms(array):
+    mu_sqrd =np.mean(array**2)
+    rms = np.sqrt(mu_sqrd)
+    return rms
+
+def get_stats(array):
+    print('Mean:    ',np.mean(array))
+    print('Sigma:   ',np.std(array))
+    print('RMS:     ',rms(array))
 
 arrays =[]
-wcss=[]
-for chunk in out_files:
-    path = chunk+'_m1.fits'
-    data,header,wcs = read_data(path)
-    array,wcs = crop_array(data[0],wcs)
-    arrays.append(array)
-    wcss.append(wcs)
 
+for chunk in out_files:
+    path = chunk+'_m2.fits'
+    data,header = read_data(path)
+    arrays.append(data[0])
+
+for i in range(len(out_files)):
+    print('---- Chunk '+str(i+1)+' -----')
+    #masked = arrays[i]
+    #masked = make_mask(arrays[i],vels[i][0],vels[i][1])
+    masked = make_mask(arrays[i],0,2500)
+    get_stats(masked    )
 
 max,min=min_max(arrays)
 
-
-
-visualize_image(arrays[0],arrays[1],arrays[2],arrays[3],arrays[4],arrays[5],arrays[6],arrays[7],wcs[0],min,max)
+visualize_image(arrays[0],arrays[1],arrays[2],arrays[3],arrays[4],arrays[5],arrays[6],arrays[7],-200,500)

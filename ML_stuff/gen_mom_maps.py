@@ -4,7 +4,7 @@ run casa enviroment
 source /vol/software/software/astro/casa/initcasa.sh
 '''
 
-raw_im = 'EG_empty_sky.im'
+raw_im = 'empty.fits'
 out_files=['chunk1.im','chunk2.im','chunk3.im','chunk4.im','chunk5.im','chunk6.im','chunk7.im','chunk8.im']
 chans=['000~132','133~374','375~617','618~860','861~1102','1103~1345','1346~1587','1588~1918']
 vels = [[-1358.0,0],[0.0,2500],[2500,5000],[5000,7500],[7500,10000],[1250,1500],[1500,18500]]
@@ -21,12 +21,12 @@ def unit_conversion(temp):
     return flux_BA
 
 for i in range(len(out_files)):
-    #make_moms(chans[i],out_files[i])
+    make_moms(chans[i],out_files[i])
     file = out_files[i]+'.weighted_coord'
     stats=imstat(file)
     #sd = unit_conversion(stats['sigma'])
     #print(stats)
-    print('sd=',stats['sigma'])
+    #print('sd=',stats['sigma'])
 
 
 def export_maps(name):
@@ -37,8 +37,8 @@ def export_maps(name):
                    fitsimage=output_files[i])
 
 
-#for file in out_files:
-#    export_maps(file)
+for file in out_files:
+    export_maps(file)
 
     
 
