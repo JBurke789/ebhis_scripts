@@ -66,20 +66,29 @@ for i in bin_edges:
     new_bins.append(val)
 
 #line_x = np.linspace(0.1,100,1000)
-line_x=np.arange(0.1,100,0.01)
-line_y =50*line_x**(-2.5)
-print(line_x,line_y)
+line_x=np.arange(1,100,0.01)
+line_y1 =300*(line_x)**(-2.5)
+line_y2 =100*(line_x)**(-2.5)
+line_y3 =500*(line_x)**(-2.5)
+
 
 fig4, (ax4)=plt.subplots(1,1)
 #ax4.hist(mean_flux,bins=int((np.log(mean_flux).max() - np.log(mean_flux).min()) / bin_width))
-ax4.hist(mean_flux, bins=new_bins,histtype='step',color='k')
-ax4.plot(line_x,line_y)
+ax4.hist(mean_flux, bins=new_bins,histtype='step',color='k',align='left')
+#ax4.plot(line_x,line_y1)
+#ax4.plot(line_x,line_y2)
+#ax4.plot(line_x,line_y3)
 ax4.set_xlabel('Mean Flux Density [Jy BA$^{-1}$]')
 ax4.set_ylabel('Counts')
 ax4.set_xscale('log')
 ax4.set_yscale('log')
 
 
+fig5, (ax5)=plt.subplots(1,1)
+ax5.plot(rv,w50,'o')
 
-
+print('min: ',np.min(rv))
+print('max: ',np.max(rv))
+print('mean:',np.mean(rv))
+print('median: ',np.median(rv))
 plt.show()
