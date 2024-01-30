@@ -6,8 +6,6 @@ run in casa enviroment
 source /vol/software/software/astro/casa/initcasa.sh
  
 '''
-
-raw_im = 'empty.fits'
 out_file_bits=['chunk0.im','chunk1.im','chunk2.im','chunk3.im']
 chans=['161~354','355~548','549~742','743~840']
 vels = [[300.,2300.],[2300.,4300.],[4300.,6300.],[6300.,8300.]]
