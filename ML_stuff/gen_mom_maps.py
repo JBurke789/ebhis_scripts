@@ -1,44 +1,39 @@
 import numpy as np
 '''
-run casa enviroment 
+makes mom 0,1,2 for each chunk in  cubes and exports to fits at the end.
+
+run in casa enviroment 
 source /vol/software/software/astro/casa/initcasa.sh
+ 
 '''
 
 raw_im = 'empty.fits'
-out_files=['chunk1.im','chunk2.im','chunk3.im','chunk4.im','chunk5.im','chunk6.im','chunk7.im','chunk8.im']
-chans=['000~132','133~374','375~617','618~860','861~1102','1103~1345','1346~1587','1588~1918']
-vels = [[-1358.0,0],[0.0,2500],[2500,5000],[5000,7500],[7500,10000],[1250,1500],[1500,18500]]
+out_file_bits=['chunk0.im','chunk1.im','chunk2.im','chunk3.im']
+chans=['161~354','355~548','549~742','743~840']
+vels = [[300.,2300.],[2300.,4300.],[4300.,6300.],[6300.,8300.]]
         
-def make_moms(chan,outfile):
-    immoments(imagename=raw_im,
+
+
+def make_moms(name,chan,outfile):
+    immoments(imagename=name,
               moments=[0,1,2],
               chans=chan,
               outfile=outfile)
 
-def unit_conversion(temp):
-    flux_jy = temp/1.28
-    flux_BA = flux_jy/8.64
-    return flux_BA
-
-for i in range(len(out_files)):
-    make_moms(chans[i],out_files[i])
-    file = out_files[i]+'.weighted_coord'
-    stats=imstat(file)
-    #sd = unit_conversion(stats['sigma'])
-    #print(stats)
-    #print('sd=',stats['sigma'])
-
-
-def export_maps(name):
-    casa_files = [name + '.integrated',name + '.weighted_coord',name + '.weighted_dispersion_coord']
-    output_files=[name + '_m0.fits',name + '_m1.fits',name + '_m2.fits']
+def export_maps(cube_id,chunk):
+    casa_files = [cube_id + chunk+'.integrated',cube_id +chunk+ '.weighted_coord',cube_id +chunk+ '.weighted_dispersion_coord']
+    output_files=[cube_id + chunk+'_m0.fits',cube_id + chunk+'_m1.fits',cube_id + chunk+'_m2.fits']
     for i in range(len(casa_files)):
         exportfits(imagename=casa_files[i],
                    fitsimage=output_files[i])
 
 
-for file in out_files:
-    export_maps(file)
+for i in range(5):
+    cube = 'cube'+str(i)+'.im'
+    for j in range(len(chans)):
+        outfile='cube'+str(i)+out_file_bits[j]
+        make_moms(cube,chans[j],outfile)
+        export_maps('cube'+str(i),out_file_bits[j])
 
-    
+
 
