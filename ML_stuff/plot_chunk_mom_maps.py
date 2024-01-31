@@ -130,82 +130,100 @@ def vis_mom2(cube,array,wcs):
     plt.show()
 
 def make_mask(array,min,max):
+    #masks values in an array that are outside of min and max value
     masked_array = np.ma.masked_outside(array, min, max)
     return masked_array
 
-def rms(array):
+def get_rms(array):
     mu_sqrd =np.mean(array**2)
     rms = np.sqrt(mu_sqrd)
     return rms
 
 def get_stats(array):
-    return [np.mean(array),np.std(array),rms(array)]
+    #calculates the stats for each array. Run on each mom map and chunk
+    return [np.mean(array),np.std(array),get_rms(array)]
+
+def make_arrays(cube_name):
+    #gets the arrays for each chunk for a single cube
+    arrays_m0=[]#get arrays
+    arrays_m1=[]
+    arrays_m2=[]
+    for i in range(4):
+        array,header,wcs = read_data(cube_name,chunks[i],'m0')
+        arrays_m0.append(array[0])
+        array,header,wcs = read_data(cube_name,chunks[i],'m1')
+        arrays_m1.append(array[0])
+        array,header,wcs = read_data(cube_name,chunks[i],'m2')
+        arrays_m2.append(array[0]) 
+    return arrays_m0,arrays_m1,arrays_m2,wcs 
+
+def make_plots(cube,m0,m1,m2,wcs):
+    #plots all the chunks for each mom map for a single cube
+    vis_mom0(cube,m0,wcs)#plot arrays
+    vis_mom1(cube,m1,wcs)
+    vis_mom2(cube,m2,wcs)
+
+def all_stats(m0,m1,m2):
+    #for a single cube, gets the stats from each chunk
+    mean=[[],[],[]]
+    std=[[],[],[]]
+    rms=[[],[],[]]
+    for chunk in range(4):
+        #moment0
+        stats=get_stats(arrays_m0[chunk])
+        mean[0].append(stats[0])
+        std[0].append(stats[1])
+        rms[0].append(stats[2])
+        #moment1 (mask so that only vel vals in interval are shown)
+        masked_m1 = make_mask(arrays_m1[chunk],vels[chunk][0],vels[chunk][1])
+        stats = get_stats(masked_m1)
+        mean[1].append(stats[0])
+        std[1].append(stats[1])
+        rms[1].append(stats[2])
+        #moment 2(mask so only vels in range are shown)
+        masked_m2 = make_mask(arrays_m2[chunk],0,2000)
+        stats=get_stats(masked_m2)
+        mean[2].append(stats[0])
+        std[2].append(stats[1])
+        rms[2].append(stats[2])
+    return mean,std,rms
+
+def stats_plot(map,title):
+    #plots the stats for each mom map for each chunk. compares cubes
+    x = [1,2,3,4]
+    fig,(ax1,ax2,ax3) = plt.subplots(3,1,sharex=True)
+    for cube in range(5):
+        ax1.plot(x,means[map][cube],label=str(cube+1))
+        ax2.plot(x, stds[map][cube],label=str(cube+1))
+        ax3.plot(x, rmss[map][cube],label=str(cube+1))
+    ax1.set_ylabel('Mean')
+    ax2.set_ylabel('Stand Dev')
+    ax3.set_ylabel('RMS')
+    ax3.set_xlabel('Chunk')
+    plt.xticks(x)
+    plt.suptitle(title)
+    plt.tight_layout()
+    plt.legend()
+    plt.show()
 
 #to be done for each cube
-cube = 'cube0'
-arrays_m0=[]#get arrays
-arrays_m1=[]
-arrays_m2=[]
-for i in range(4):
-    array,header,wcs = read_data(cube,chunks[i],'m0')
-    arrays_m0.append(array[0])
-    array,header,wcs = read_data(cube,chunks[i],'m1')
-    arrays_m1.append(array[0])
-    array,header,wcs = read_data(cube,chunks[i],'m2')
-    arrays_m2.append(array[0])    
-vis_mom0(cube,arrays_m0,wcs)#plot arrays
-vis_mom1(cube,arrays_m1,wcs)
-vis_mom2(cube,arrays_m2,wcs)
+means =[[],[],[]]
+stds=[[],[],[]]
+rmss=[[],[],[]]
 
+for i in range(5):
+    cube='cube'+str(i)
 
-m0_mean=[]
-m0_std=[]
-m0_rms=[]
-for chunk in range(4):
-    stats=get_stats(arrays_m0[chunk])
-    print(stats)
-    #do for other mom maps
+    print('--------',cube,'--------')
+    arrays_m0,arrays_m1,arrays_m2,wcs = make_arrays(cube)
+    make_plots(cube,arrays_m0,arrays_m1,arrays_m2,wcs)
+    mean,std,rms=all_stats(arrays_m0,arrays_m1,arrays_m2)
+    for map in range(3):
+        means[map].append(mean[map])
+        stds[map].append(std[map])
+        rmss[map].append(rms[map])
+        
 
-'''
-for j in range(5):
-    cube = 'cube'+str(j)
-    arrays=[]
-    for i in range(4):
-        array,header,wcs = read_data(cube,chunks[i],'m0')
-        arrays.append(array[0])
-    vis_mom0(cube,arrays,wcs)
-
-done=input('y:')
-'''
-
-
-
-"""
-
-def rms(array):
-    mu_sqrd =np.mean(array**2)
-    rms = np.sqrt(mu_sqrd)
-    return rms
-
-def get_stats(array):
-    print('Mean:    ',np.mean(array))
-    print('Sigma:   ',np.std(array))
-    print('RMS:     ',rms(array))
-
-arrays =[]
-
-for chunk in out_files:
-    path = chunk+'_m2.fits'
-    data,header = read_data(path)
-    arrays.append(data[0])
-
-for i in range(len(out_files)):
-    print('---- Chunk '+str(i+1)+' -----')
-    #masked = arrays[i]
-    #masked = make_mask(arrays[i],vels[i][0],vels[i][1])
-    masked = make_mask(arrays[i],0,2500)
-    get_stats(masked    )
-
-max,min=min_max(arrays)
-
-visualize_image(arrays[0],arrays[1],arrays[2],arrays[3],arrays[4],arrays[5],arrays[6],arrays[7],-200,500)"""
+stats_plot(0,'Moment 0')
+stats_plot(1,'Moment 1')
+stats_plot(2,'Moment 2')
