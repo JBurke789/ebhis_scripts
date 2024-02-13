@@ -13,15 +13,17 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 makes mom map from fits file for single galaxy.
 run in full list directory
 """
-chunks=['chunk0','chunk1','chunk2','chunk3']
+chunks=['\chunk0','\chunk1','\chunk2','\chunk3']
 vels = [[300,2300],[2300,4300],[4300,6300],[6300,8300]]
+x_coords =[[0,14],[15,29],[30,44],[45,59]]#coords of sub boxes
+y_coords =[[0,14],[15,29],[30,44],[45,59],[60,75]]
   
 def make_string(vel):
     string= str(vel[0])+ ' - '+str(vel[1])+ ' km/s '
     return string
 
 def read_data(chunk,mom_map):
-    filepath =chunk+'_'+mom_map+'.fits'
+    filepath ='..\..\..\Desktop\gal_cube'+chunk+'_'+mom_map+'.fits'
     hdul= fits.open(filepath)
     array = hdul[0].data
     header = hdul[0].header
@@ -39,7 +41,7 @@ def min_max(arrays):
     return max(maxes),min(mins)
 
 def vis_mom0(cube,array,wcs):
-    max,min = min_max(array)
+    
     fig = plt.figure()
     fig.suptitle(cube+' - Moment 0 Maps')
     
@@ -71,6 +73,54 @@ def vis_mom0(cube,array,wcs):
     cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
     cbar = plt.colorbar(im1,cax=cbar_ax)
     cbar.set_label('K km/s')
+    plt.show()
+
+
+def vis_mom1(cube,array,wcs):
+    
+    fig = plt.figure()
+    fig.suptitle(cube+' - Moment 1 Maps')
+    
+    fig.add_subplot(141,projection=wcs)
+    im1=plt.imshow(array[0],vmin=300,vmax=2300)
+    plt.vlines([15,30,45],0,75,'r',linewidth=0.5)
+    plt.hlines([15,30,45,60],0,61,'r',linewidth=0.5)
+    plt.title(make_string(vels[0]))
+    cbar=plt.colorbar()
+    cbar.formatter = ScalarFormatter(useMathText=False)
+    cbar.ax.set_ylabel('km/s')
+    cbar.update_ticks()
+
+    fig.add_subplot(142,projection=wcs)
+    im2=plt.imshow(array[1],vmin=2300,vmax=4300)
+    plt.vlines([15,30,45],0,75,'r',linewidth=0.5)
+    plt.hlines([15,30,45,60],0,61,'r',linewidth=0.5)
+    plt.title(make_string(vels[1]))
+    cbar=plt.colorbar()
+    cbar.formatter = ScalarFormatter(useMathText=False)
+    cbar.ax.set_ylabel('km/s')
+    cbar.update_ticks()
+
+    fig.add_subplot(143,projection=wcs)
+    im3=plt.imshow(array[2],vmin=4300,vmax=6300)
+    plt.title(make_string(vels[2]))
+    plt.vlines([15,30,45],0,75,'r',linewidth=0.5)
+    plt.hlines([15,30,45,60],0,61,'r',linewidth=0.5)
+    cbar=plt.colorbar()
+    cbar.formatter = ScalarFormatter(useMathText=False)
+    cbar.ax.set_ylabel('km/s')
+    cbar.update_ticks()
+
+    fig.add_subplot(144,projection=wcs)
+    im4=plt.imshow(array[3],vmin=6300,vmax=8300)
+    plt.title(make_string(vels[3]))
+    plt.vlines([15,30,45],0,75,'r',linewidth=0.5)
+    plt.hlines([15,30,45,60],0,61,'r',linewidth=0.5)
+    cbar=plt.colorbar()
+    cbar.formatter = ScalarFormatter(useMathText=False)
+    cbar.ax.set_ylabel('km/s')
+    cbar.update_ticks()
+
     plt.show()
 
 def make_arrays():
@@ -125,56 +175,108 @@ def all_stats(m0,m1,m2):
         rms[2].append(stats[2])'''
     return mean,std,rms
 
+def make_mask(array,min,max):
+    #masks values in an array that are outside of min and max value
+    masked_array = np.ma.masked_outside(array, min, max)
+    return masked_array
 
 
 arrays_m0,arrays_m1,arrays_m2,wcs  = make_arrays()
 
+def plot_stats(array):# input arrays_m0,arrays_m1,arrays_m2
+    mean=[[],[],[],[]]#each sub list for each chunk, within each list, each box
+    std= [[],[],[],[]]
+    rms= [[],[],[],[]]
+    for i in range(len(chunks)):#runs through sub arrays and appends stats to lists
+        for y in range(5):
+            for x in range(4): 
+                sub = sub_array(array[i],x_coords[x],y_coords[y])
+                stats = get_stats(sub)
+                mean[i].append(stats[0])
+                std[i].append( stats[1])
+                rms[i].append( stats[2])
 
-x_coords =[[0,14],[15,29],[30,44],[45,59]]
-y_coords =[[0,14],[15,29],[30,44],[45,59],[60,75]]
+    x=[1,2,3,4]#reforms lists to make suitable for plotting
+    ys=[[],[],[]]
+    for bit in range(20):
+        y_single=[[],[],[]]
+        for i in range(4):
+            y_single[0].append(mean[i][bit])
+            y_single[1].append(std[i][bit])
+            y_single[2].append(rms[i][bit])
+        ys[0].append(y_single[0])
+        ys[1].append(y_single[1])
+        ys[2].append(y_single[2])
 
-mean=[[],[],[],[]]
-std= [[],[],[],[]]
-rms= [[],[],[],[]]
-for i in range(len(chunks)):
-    for y in range(5):
-        for x in range(4): 
-            sub = sub_array(arrays_m1[i],x_coords[x],y_coords[y])
-            stats = get_stats(sub)
-            mean[i].append(stats[0])
-            std[i].append( stats[1])
-            rms[i].append( stats[2])
+    fig,(ax1,ax2,ax3) = plt.subplots(3,1,sharex=True)
+    for y in ys[0]:
+        ax1.plot(x,y)
+    for y in ys[1]:
+        ax2.plot(x,y)
+    for y in ys[2]:
+        ax3.plot(x,y)
 
-x=[1,2,3,4]
-ys=[[],[],[]]
-for bit in range(20):
-    y_single=[[],[],[]]
-    for i in range(4):
-        y_single[0].append(mean[i][bit])
-        y_single[1].append(std[i][bit])
-        y_single[2].append(rms[i][bit])
-    ys[0].append(y_single[0])
-    ys[1].append(y_single[1])
-    ys[2].append(y_single[2])
+    ax1.set_ylabel('Mean')
+    ax2.set_ylabel('Stand Dev')
+    ax3.set_ylabel('RMS')
+    ax3.set_xlabel('Chunk')
+    plt.xticks(x)
+    plt.suptitle('stats')
+    plt.tight_layout()
+    plt.show()
+    #google how to show lots of lines nice and label them somehow
 
 
-fig,(ax1,ax2,ax3) = plt.subplots(3,1,sharex=True)
-for y in ys[0]:
-    ax1.plot(x,y)
-for y in ys[1]:
-    ax2.plot(x,y)
-for y in ys[2]:
-    ax3.plot(x,y)
+#plot_stats(arrays_m2)
 
-ax1.set_ylabel('Mean')
-ax2.set_ylabel('Stand Dev')
-ax3.set_ylabel('RMS')
-ax3.set_xlabel('Chunk')
-plt.xticks(x)
-plt.suptitle('Moment 1')
-plt.tight_layout()
-plt.legend()
-plt.show(block=False)
+def out_of_range():
+    frac_out = [[],[],[],[]]
+    for i in range(len(chunks)):#gets number of pix outside of range, need to save for plotting
+        for y in range(5):
+            for x in range(4): 
+                sub = sub_array(arrays_m1[i],x_coords[x],y_coords[y])
+                l_vel = vels[i][0]
+                h_vel = vels[i][1]
+                pix =0
+                out_pix=0
+                flat_sub = sub.flatten()
+                for k in flat_sub:
+                    pix+=1
+                    if k <=l_vel or k>=h_vel:
+                        out_pix+=1
+
+                frac_out[i].append(float(out_pix)/float(pix))
+
+    x=[1,2,3,4]#reforms lists to make suitable for plotting
+    ys=[]
+    for bit in range(20):
+        y_single=[]
+        for i in range(4):
+            y_single.append(frac_out[i][bit])
+        ys.append(y_single)
+
+    fig, ax = plt.subplots(1,1)
+    for y in ys:
+        ax.plot(x,y)
+
+    ax.set_xlabel('Chunk')
+    plt.xticks(x)
+    plt.suptitle('stats')
+    plt.tight_layout()
+    plt.show()
+    print(len(ys))
+    print(len(ys[0]))
+
+
+    
+
+out_of_range()
+
+
+
+
+
+
 
 '''
 fig = plt.figure()
@@ -183,4 +285,4 @@ fig.add_subplot()
 im1=plt.imshow(gal_array,origin='lower')
 plt.show(block=False)
 '''
-vis_mom0('',arrays_m1,wcs)
+#vis_mom0('',arrays_m1,wcs)
