@@ -352,8 +352,8 @@ arrays_m0,arrays_m1,arrays_m2,wcs  = make_arrays()
 #vis_mom1('',arrays_m1,wcs)
 #vis_mom2('',arrays_m2,wcs)
 #plot_stats(arrays_m0,0)
-#plot_stats(arrays_m1,1)
+plot_stats(arrays_m1,1)
 #plot_stats(arrays_m2,2)
-out_of_range()
+#out_of_range()
 
 
