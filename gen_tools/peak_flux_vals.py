@@ -3,6 +3,7 @@ import csv
 import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
+from sklearn.linear_model import LinearRegression
 
 full_list =[]
 
@@ -19,7 +20,7 @@ def get_array(gal_name):
     return array #[vel,ON,OFF]
 
 
-int_fluxes =[]
+mean_fluxes =[]
 peak_fluxes =[]
 
 for gal in full_list:
@@ -28,11 +29,11 @@ for gal in full_list:
     w50 = float(gal[11])
     flux_int = float(gal[4])
 
-    arrays = get_array(gal[0])
+    mean_flux = flux_int/w50
     
-
+    
+    arrays = get_array(gal[0])
     vel_int = [rv-w50/2,rv+w50/2]
-    print(vel_int)
 
     mask = (arrays[0]>=vel_int[0]) & (arrays[0]<=vel_int[1])
     peak_vels = arrays[0][mask]
@@ -40,19 +41,37 @@ for gal in full_list:
 
    
     max_flux = np.max(np.array(peak_flux))
-    if max_flux>35:
-        print(gal[0])
-    if max_flux>0:
-        int_fluxes.append(flux_int)
+    if max_flux>0 and max_flux<35:
+        mean_fluxes.append(mean_flux)
         peak_fluxes.append(max_flux)
 
-data = np.array([int_fluxes,peak_fluxes])
-print(data)
-np.save('ebhis_scripts/gen_tools/peaks_data.npy',data)
+data = np.array([mean_fluxes,peak_fluxes])
 
-print(min(peak_fluxes))
+#np.save('ebhis_scripts/gen_tools/peaks_data.npy',data)
+x_reshaped = data[0].reshape(-1,1)
+model = LinearRegression()
+model.fit(x_reshaped, data[1])
+y_pred = model.predict(x_reshaped)
+
+x_fit = np.linspace(0,20,10)
+y_fit = model.coef_[0]*x_fit + model.intercept_
+
 plt.figure()
-plt.scatter(int_fluxes,peak_fluxes)
+plt.plot(x_fit, y_fit, linestyle='dashed',alpha=0.7,color='red', label='Linear fit')
+
+plt.scatter(mean_fluxes,peak_fluxes,s=5,color='k')
+plt.xlabel('Mean Flux [Jy]')
+plt.ylabel('Peak Flux [Jy]')
 plt.show()
-#carry out linear fit maybe with scikit learn
-# https://realpython.com/linear-regression-in-python/
+
+print('slope:', model.coef_[0])
+print('intercept:',model.intercept_)
+#slope: 0.918991967786306
+#intercept: 2.369921536005469
+
+#median peak flux density
+#median mean flux density = 0.72 Jy
+
+val = model.coef_[0]*0.72 +model.intercept_
+
+print(val)
