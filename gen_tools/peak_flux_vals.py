@@ -72,5 +72,6 @@ print('intercept:',model.intercept_)
 #median peak flux density
 #median mean flux density = 0.72 Jy
 
-val = 0.72/model.coef_[0]
-print(val)#3.0315957528116093
+val = 0.72* model.coef_[0] + model.intercept_
+print(val)#0.7834671305499616
+
